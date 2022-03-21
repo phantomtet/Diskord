@@ -1,10 +1,17 @@
 import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { signIn } from './../api/api';
+import { color4, color6, color7, color8 } from '../misc/config';
+import { signIn } from '../api/api';
+import { useDispatch } from 'react-redux';
+import { setProfile } from '../store/profile';
 
-export const SignIn = () => {
+const SignIn = () => {
+    // hook
+    const dispatch = useDispatch()
+
+    // state
     const [input, setInput] = useState({
-        username: '',
+        email: '',
         password: '',
     })
     const [emailError, setEmailError] = useState(null)
@@ -13,9 +20,10 @@ export const SignIn = () => {
         return signIn(input)
     }
     const handleResponse = (res) => {
-        console.log(res)
+        // alert(localStorage.getItem('diskordToken'))
         if (res.success) {
-            alert('logged')
+            dispatch(setProfile(res.data))
+            localStorage.setItem('diskordToken', res.token)
         }
         else {
             setEmailError(res.message)
@@ -26,7 +34,9 @@ export const SignIn = () => {
     useEffect(() => {
         setEmailError(null)
     }, [input])
-    
+    useEffect(() => {
+        localStorage.getItem('diskordToken')
+    })
     return (
         <div
         align='center'
@@ -43,7 +53,7 @@ export const SignIn = () => {
                 justifyContent: 'space-between',
                 borderRadius: 4,
                 padding: 32,
-                backgroundColor: '#36393F',
+                backgroundColor: color6,
             }}
             sx={{
                 height: {
@@ -64,9 +74,9 @@ export const SignIn = () => {
                 >
                     <div>
                         <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Welcome back!</div>
-                        <div style={{fontSize: 16, color: '#B9BBBE'}}>We're so excited to see you again!</div>
+                        <div style={{fontSize: 16, color: color4}}>We're so excited to see you again!</div>
                     </div>
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? '#B9BBBE' : '#ED4245', fontWeight: 600}}>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? color4 : color7, fontWeight: 600}}>
                         EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
                     <TextField
@@ -74,15 +84,15 @@ export const SignIn = () => {
                     color={emailError ? 'error' : ''}
                     inputProps={{
                         style: {
-                            color: '#dcddde',
+                            color: color8,
                         }
                     }}
                     size='small'
                     fullWidth
-                    value={input.username}
-                    onChange={e => setInput(prev => ({...prev, username: e.target.value}))}
+                    value={input.email}
+                    onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? '#B9BBBE' : '#ED4245', fontWeight: 600}}>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? color4 : color7, fontWeight: 600}}>
                         PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
 
@@ -148,3 +158,5 @@ const LoginButton = ({onClick, response}) => {
         </Button>
     )
 }
+
+export default SignIn

@@ -1,0 +1,89 @@
+import { ClickAwayListener, Divider, Popper } from "@mui/material"
+import { Fragment, useState, useRef, useEffect } from "react"
+import { getUser } from "../api/api"
+import { color3, color4, color5 } from './../misc/config';
+
+const Profile = ({children, id}) => {
+    const [isOpen, setIsOpen] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [profileData, setProfileData] = useState('loading')
+    const onClick = (e) => {
+        setAnchorEl(e.target)
+        setIsOpen(prev => !prev)
+    }
+    const style = {
+        cursor: 'pointer'
+    }
+    useEffect(() => {
+        if (!isOpen) return
+        getUser(id).then(res => {
+            if (res.status === 200) {
+                setProfileData(res.data)
+            }
+        })
+    }, [isOpen])
+    return (
+        <Fragment>
+            {children({onClick, style})}
+            {
+                isOpen &&
+                <ClickAwayListener onClickAway={() => setIsOpen(false)}>
+                    <Popper
+                    open={isOpen}
+                    anchorEl={anchorEl}
+                    >
+                        <div
+                        style={{
+                            width: 300,
+                        }}
+                        >
+                            <div
+                            name="header"
+                            style={{
+                                borderRadius: '10px 10px 0 0',
+                                height: 60,
+                                backgroundColor: profileData.bannerColor,
+                                position: 'relative'
+                            }}
+                            >
+                                <div
+                                style={{
+                                    position: 'absolute',
+                                    backgroundColor: 'red',
+                                    height: 80,
+                                    width: 80,
+                                    borderRadius: '100%',
+                                    bottom: -40,
+                                    left: 20,
+                                    border: '5px solid #18191c'
+                                }}
+                                />
+                            </div>
+                            <div
+                            style={{
+                                padding: '55px 20px 20px 20px',
+                                borderRadius: '0 0 10px 10px',
+                                backgroundColor: color3,
+                            }}
+                            >
+                                <div style={{fontSize: 20, fontWeight: "bolder", color: "white", marginBottom: 20}}>
+                                    {profileData.username}
+                                    <span style={{ color: color4}}>&nbsp;#1234</span>
+                                </div>
+                                <Divider sx={{backgroundColor: color5}}/>
+                                {
+                                    profileData.bio &&
+                                    <div name='bio' style={{padding: '10px 0', color: color4, fontSize: 12}}>
+                                        <div style={{fontWeight: 'bold', marginBottom: 5}}>ABOUT ME</div>
+                                        <div>{profileData.bio}</div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </Popper>
+                </ClickAwayListener>
+            }
+        </Fragment>
+    )
+}
+export default Profile

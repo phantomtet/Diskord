@@ -1,25 +1,39 @@
 import express from 'express';
 import cors from 'cors'
-import signInRouter from './route/signin.js'
-import signUpRouter from './route/signup.js'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
-
+import { Server } from 'socket.io'
+import { createServer } from 'http'
+import userRouter from './route/user.js'
+import signInRouter from './route/signin.js'
+import registerRouter from './route/register.js'
+import channelRouter from './route/channel.js'
+import meRouter from './route/@me.js'
+import multer from 'multer';
 dotenv.config()
-const PORT = process.env.PORT || 9999
+
+
 const app = express()
+mongoose.connect(process.env.CONNECTION_URL)
+
+const server = createServer(app)
+export const io = new Server(server, {
+    cors: {
+        origin: 'http://localhost:3000'
+    }
+})
+io.on('connection', socket => {
+    // receive message
+})
 // middleware
 app.use(express.json())
 app.use(cors())
 
+
 // router
-app.use('/signin', signInRouter)
-app.use('/signup', signUpRouter)
-
-mongoose.connect(process.env.CONNECTION_URL)
-.then(() => {
-    app.listen(PORT, () => {
-        console.log('Server running on port', PORT)
-    })
-})
-
+app.use('/api/signin', signInRouter)
+app.use('/api/register', registerRouter)
+app.use('/api/channel', channelRouter)
+app.use('/api/user', userRouter)
+app.use('/api/@me', meRouter)
+server.listen(3001)
