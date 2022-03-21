@@ -3,7 +3,7 @@ import { IconButton, Paper, TextField } from '@mui/material';
 import React, { useState, useRef, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import { color1, color2, } from './../misc/config';
+import { black, black1, } from './../misc/config';
 
 const MessageInput = ({onSubmit}) => {
     const ref = useRef()
@@ -22,7 +22,7 @@ const MessageInput = ({onSubmit}) => {
         <div>
             {
                 isFileChosen &&
-                <div style={{ display: 'flex', padding: '20px 10px 10px 10px', backgroundColor: color1, borderRadius: '10px 10px 0 0', margin: '0 1px', overflow: 'auto hidden'}}>
+                <div style={{ display: 'flex', padding: '20px 10px 10px 10px', backgroundColor: black, borderRadius: '10px 10px 0 0', margin: '0 1px', overflow: 'auto hidden'}}>
                     {
                         state.files.map((item, index) =>
                             <FilePreview
@@ -41,7 +41,7 @@ const MessageInput = ({onSubmit}) => {
             size='small'
             InputProps={{
                 startAdornment: <IconButton onClick={() => ref.current.click()} style={{marginRight: 10, backgroundColor: 'lightgray', width: 24, height: 24}}><AddIcon/></IconButton>,
-                style: { color: 'lightgray', backgroundColor: color1, borderRadius: isFileChosen ? '0 0 10px 10px' : 10, maxHeight: '50vh',  overflow: 'auto'}
+                style: { color: 'lightgray', backgroundColor: black, borderRadius: isFileChosen ? '0 0 10px 10px' : 10, maxHeight: '50vh',  overflow: 'auto'}
             }}
             value={state.content}
             onChange={e => setState(prev => ({...prev, content: e.target.value}))}
@@ -73,7 +73,7 @@ const FilePreview = ({data, onClose}) => {
     return (
         <Paper 
         style={{
-            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: color2, color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px'
+            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: black1, color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px'
         }}>
             <img src={url} style={{maxWidth: '100%', height: '100%', objectFit: 'contain', margin: 'auto', borderRadius: '3px'}}/>
             <div style={{position: 'absolute', bottom: 0, left: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%'}}>{data.name}</div>

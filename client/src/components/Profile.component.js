@@ -1,7 +1,7 @@
 import { ClickAwayListener, Divider, Popper } from "@mui/material"
 import { Fragment, useState, useRef, useEffect } from "react"
 import { getUser } from "../api/api"
-import { color3, color4, color5 } from './../misc/config';
+import { black1, white1, black } from './../misc/config';
 
 const Profile = ({children, id}) => {
     const [isOpen, setIsOpen] = useState(false)
@@ -63,17 +63,17 @@ const Profile = ({children, id}) => {
                             style={{
                                 padding: '55px 20px 20px 20px',
                                 borderRadius: '0 0 10px 10px',
-                                backgroundColor: color3,
+                                backgroundColor: black1,
                             }}
                             >
                                 <div style={{fontSize: 20, fontWeight: "bolder", color: "white", marginBottom: 20}}>
                                     {profileData.username}
-                                    <span style={{ color: color4}}>&nbsp;#1234</span>
+                                    <span style={{ color: white1}}>&nbsp;#1234</span>
                                 </div>
-                                <Divider sx={{backgroundColor: color5}}/>
+                                <Divider sx={{backgroundColor: black1}}/>
                                 {
                                     profileData.bio &&
-                                    <div name='bio' style={{padding: '10px 0', color: color4, fontSize: 12}}>
+                                    <div name='bio' style={{padding: '10px 0', color: white1, fontSize: 12}}>
                                         <div style={{fontWeight: 'bold', marginBottom: 5}}>ABOUT ME</div>
                                         <div>{profileData.bio}</div>
                                     </div>

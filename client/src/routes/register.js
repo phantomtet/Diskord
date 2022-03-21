@@ -1,8 +1,8 @@
 import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { register, signIn } from '../api/api';
-import { color4, color6, color8 } from '../misc/config';
-import { color7 } from './../misc/config';
+import { white1, grey, white } from '../misc/config';
+import { red } from './../misc/config';
 
 const Register = () => {
     const [input, setInput] = useState({
@@ -46,7 +46,7 @@ const Register = () => {
                 justifyContent: 'space-between',
                 borderRadius: 4,
                 padding: 32,
-                backgroundColor: color6,
+                backgroundColor: grey,
             }}
             sx={{
                 height: {
@@ -67,9 +67,9 @@ const Register = () => {
                 >
                     <div>
                         <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Welcome back!</div>
-                        <div style={{fontSize: 16, color: color4}}>We're so excited to see you again!</div>
+                        <div style={{fontSize: 16, color: white1}}>We're so excited to see you again!</div>
                     </div>
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? color4 : color7, fontWeight: 600}}>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
                         EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
                     <TextField
@@ -77,7 +77,7 @@ const Register = () => {
                     color={emailError ? 'error' : ''}
                     inputProps={{
                         style: {
-                            color: color8,
+                            color: white,
                         }
                     }}
                     size='small'
@@ -85,7 +85,7 @@ const Register = () => {
                     value={input.email}
                     onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? color4 : color7, fontWeight: 600}}>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
                         PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
 

@@ -4,7 +4,7 @@ import { sendMessage, getMessage } from './../api/api';
 import Profile from './../components/Profile.component';
 import { socket } from './../App';
 import MessageInput from './../components/MessageInput.component';
-import { color4, color6 } from "../misc/config";
+import { white1, grey } from "../misc/config";
 
 const Channel = () => {
     // boiler plate
@@ -86,7 +86,7 @@ const ChatList = ({onSubmit, data, fetchNextData = () => true}) => {
                 padding: '0 16px 20px 16px',
                 height: '100vh',
                 // width: '100%',
-                backgroundColor: color6,
+                backgroundColor: grey,
                 // display: 'flex',
                 flexDirection: 'column-reverse'
             }}
@@ -198,7 +198,7 @@ const SingleMessage = ({data}) => {
                     </Profile>
                 </div>
                 <div>
-                    <span style={{color: color4, wordBreak: 'break-word'}}>{data.content}</span>
+                    <span style={{color: white1, wordBreak: 'break-word'}}>{data.content}</span>
                 </div>
             </div>
         </div>
