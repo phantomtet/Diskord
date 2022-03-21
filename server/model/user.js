@@ -47,6 +47,10 @@ const userSchema = mongoose.Schema({
     dms: [{
         type: mongoose.Types.ObjectId,
         ref: 'dm'
+    }],
+    friends: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
     }]
 })
 export const userPrivateFields = {
@@ -54,7 +58,8 @@ export const userPrivateFields = {
     guilds: 0,
     channels: 0,
     email: 0,
-    password: 0
+    password: 0,
+    friends: 0
 }
 const profileSchema = mongoose.Schema({
     // required

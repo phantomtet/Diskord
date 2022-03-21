@@ -2,14 +2,16 @@ import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { white1, grey, red, white } from '../misc/config';
 import { signIn } from '../api/api';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setProfile } from '../store/profile';
+import { useHistory } from 'react-router-dom';
 
 const SignIn = () => {
     // hook
     const dispatch = useDispatch()
-
+    const history = useHistory()
     // state
+    const id = useSelector(state => state.profile?._id)
     const [input, setInput] = useState({
         email: '',
         password: '',
@@ -35,8 +37,8 @@ const SignIn = () => {
         setEmailError(null)
     }, [input])
     useEffect(() => {
-        localStorage.getItem('diskordToken')
-    })
+        if (id) history.push('/@me')
+    }, [id])
     return (
         <div
         align='center'

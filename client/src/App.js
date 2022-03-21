@@ -8,20 +8,26 @@ import { useEffect } from 'react';
 import Dashboard from './routes/@me';
 
 import './App.css'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { getMe } from './api/api';
+import { setProfile } from './store/profile';
 export const socket = io('http://localhost:3001')
 
 function App() {
-  const profile = useSelector(state => state.profile)
+  const dispatch = useDispatch()
+  const id = useSelector(state => state.profile?._id)
   const history = useHistory()
   useEffect(() => {
-    const token = localStorage.getItem('diskordToken')
-
-    if (!token) {
+    if (!localStorage.getItem('diskordToken')) {
       history.push('/signin')
+      return
     }
-    
-  }, [])
+    if (!id) getMe().then(res => {
+      if (res.status === 200) {
+        dispatch(setProfile(res.data))
+      }
+    })
+  }, [id])
   return (
     <div className='fullwidth flex'>
       <Sidebar/>
