@@ -35,16 +35,16 @@ const Dashboard = () => {
                         <div style={{margin: '0 15px', alignItems:'center', display: 'flex'}}><PeopleIcon style={{marginRight: '5px'}}/> Friends</div>
                         <Divider variant='middle' orientation='vertical' flexItem style={{color: '#42454a', backgroundColor: '#42454a', width: '2px'}}/> 
                         <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px'}}>Online</Button>
+                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Online</Button>
                         </div>
                         <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px'}}>Online</Button>
+                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>All</Button>
                         </div>
                         <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px'}}>Online</Button>
+                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Incoming Requests</Button>
                         </div>
                         <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px'}}>Online</Button>
+                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Outgoing Requests</Button>
                         </div>
                         <div>
                             <Button size='small' style={{color: 'white', backgroundColor: '#3ca55d', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Add Friend</Button>
@@ -152,7 +152,7 @@ const FriendList = () => {
                 />
                 {/* All friends */}
                 <div style={{marginTop: 20, fontWeight: 'bolder', fontSize: 15}}>
-                    ALL FRIENDS - {0}
+                    ALL FRIENDS - {friendList?.length || 0}
                 </div>
             </div>
             <div style={{ height: 'calc(100% - 114px)', overflow: 'hidden scroll', padding: '0px 20px 0px 30px'}}>
