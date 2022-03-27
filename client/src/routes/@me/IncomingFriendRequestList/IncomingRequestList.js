@@ -4,7 +4,9 @@ import { TextField, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import CheckIcon from '@mui/icons-material/Check';
+import { sendFriendRequestTo } from '../../../api/api';
+import { deleteRelationship } from './../../../api/api';
 
 const IncomingRequestList = () => {
     const [search, setSearch] = useState('')
@@ -34,7 +36,7 @@ const IncomingRequestList = () => {
                     list?.map((item, index) =>
                         <ListItem
                         key={index}
-                        data={item}
+                        data={item.user}
                         />
                     )
                 }
@@ -44,18 +46,23 @@ const IncomingRequestList = () => {
     )
 }
 const ListItem = ({data}) => {
+    const handleAccept = e => {
+        sendFriendRequestTo(data._id)
+    }
+    const handleDecline = e => {
+        deleteRelationship(data._id)
+    }
     return (
         <div className='canclick' style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between'}}>
             <div style={{display: 'flex'}}>
                 <img className='avatar-32' style={{marginRight: 10}}/>
                 <div>
                     <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>{data?.username}</div>
-                    <div style={{color: 'B9BBBE', fontSize: 13}}>Online</div>   
                 </div>
             </div>
             <div style={{display: 'flex'}}>
-                <IconButton><ChatBubbleIcon fontSize='small'/></IconButton>
-                <IconButton><MoreVertIcon fontSize='small'/></IconButton>
+                <IconButton><CheckIcon onClick={handleAccept} fontSize='small'/></IconButton>
+                <IconButton><CloseIcon onClick={handleDecline} fontSize='small'/></IconButton>
             </div>
         </div>
     )

@@ -1,15 +1,19 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useRef, useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { TextField, IconButton } from '@mui/material';
+import { TextField, IconButton, MenuItem, Menu, Popper, ClickAwayListener, Box, Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import { deleteRelationship } from './../../../api/api';
 
 const FriendList = () => {
     const [search, setSearch] = useState('')
     const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 1))
-
+    const [dialogOpen, setDialogOpen] = useState(null)
+    const handleRemoveFriend = useCallback((data) => {
+        setDialogOpen(data.user)
+    }, [])
     return (
         <div style={{width: '100%'}}>
             {/* Search */}
@@ -33,17 +37,27 @@ const FriendList = () => {
                 {
                     list?.map((item, index) =>
                         <FriendListItem
+                        onRemoveFriend={handleRemoveFriend}
                         key={index}
                         data={item}
                         />
                     )
                 }
             </div>
+            <RemoveFriendDialog
+            data={dialogOpen}
+            onClose={() => setDialogOpen(null)}
+            />
         </div>
 
     )
 }
-const FriendListItem = ({data}) => {
+const FriendListItem = React.memo(({data, onRemoveFriend}) => {
+    const [anchorEl, setAnchorEl] = useState(null)
+    const handleRemoveFriend = () => {
+        setAnchorEl(null)
+        onRemoveFriend(data)
+    }
     return (
         <div className='canclick' style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between'}}>
             <div style={{display: 'flex'}}>
@@ -55,9 +69,41 @@ const FriendListItem = ({data}) => {
             </div>
             <div style={{display: 'flex'}}>
                 <IconButton><ChatBubbleIcon fontSize='small'/></IconButton>
-                <IconButton><MoreVertIcon fontSize='small'/></IconButton>
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}><MoreVertIcon fontSize='small'/></IconButton>
+                <Popper
+                className='popper'
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                >
+                    <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
+                        <Box style={{padding: 6}}>
+                            <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Video Call</MenuItem>
+                            <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Voice Call</MenuItem>
+                            <MenuItem style={{fontSize: 14, color: '#ED4245', minWidth: 170}} onClick={handleRemoveFriend}>Remove Friend</MenuItem>
+                        </Box>
+                    </ClickAwayListener>
+                </Popper>
             </div>
         </div>
+    )
+}
+)
+const RemoveFriendDialog = ({data, onClose}) => {
+    const handleRemove = e => {
+        deleteRelationship(data._id)
+        onClose()
+    }
+    return (
+        <Dialog open={Boolean(data)} onClose={onClose} maxWidth='xs'>
+            <DialogTitle style={{ backgroundColor: '#36393F',}}>Remove '{data?.username}'</DialogTitle>
+            <DialogContent style={{ backgroundColor: '#36393F',}}>
+                Are you sure you want to permanently remove '{data?.username}' from your friends?
+            </DialogContent>
+            <DialogActions style={{ backgroundColor: '#2F3136'}}>
+                <Button onClick={onClose} style={{ backgroundColor: '#2F3136', color: 'white', textTransform: 'capitalize', fontWeight: 'bold'}}>Cancel</Button>
+                <Button onClick={handleRemove} style={{ backgroundColor: '#ED4245', color: 'white', textTransform: 'capitalize', fontWeight: 'bold'}}>Remove Friend</Button>
+            </DialogActions>
+        </Dialog>
     )
 }
 

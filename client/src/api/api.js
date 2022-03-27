@@ -21,28 +21,22 @@ HTTP.interceptors.request.use(config => {
   error => { Promise.reject(error) }
 )
 const responseSuccessHandler = response => {
-  return {status: response.status, a: '12'}
+  console.log({status: response.status, message: response?.data?.message})
+  return {status: response.status, message: response?.data?.message, data: response?.data}
 };
 
 const responseErrorHandler = error => {
+  // console.log({message: error.response?.data?.message, status: error.response?.status})
   // eslint-disable-next-line eqeqeq
   if (error == 'Error: Network Error') {
     return {message: 'Could not connect to server, please try again later'}
-  } else {
-    if (error.response?.status === 401 || error.response?.status === 403 ) {
-      return {message: error.response?.data.message}
-    } else if (error.response?.status === 422) {
-      return {message: Object.values(error.response.data)[0][0] }
-    }
-    else {
-      // return Promise.reject(error)
-      return {message: error.response?.data?.message, status: error.response?.status}
-    }
-  }
+  } 
+  return {message: error.response?.data?.message, status: error.response?.status}
+
 }
 
 HTTP.interceptors.response.use(
-  response => response,
+  response => responseSuccessHandler(response),
   error => responseErrorHandler(error)
 );
 

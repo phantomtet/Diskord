@@ -146,3 +146,7 @@ code {
   justify-content: center;
   font-size: 11px;
 }
+.popper {
+  background-color: #18191c;
+  border-radius: 5px;
+}

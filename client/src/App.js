@@ -38,18 +38,25 @@ function App() {
     }
   }, [id])
   useEffect(() => {
-    if (!socket) return
-    socket.on('request sent', (user) => {
+    if (!id) {
+      console.log('remove all listener')
+      socket?.removeAllListenter()
+      return
+    }
+    socket?.on('request sent', (user) => {
+      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+    })
+    socket?.on('request received', (user) => {
+      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+    })
+    socket?.on('request accepted', (user) => {
       console.log(user)
-      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+      dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item)})))
     })
-    socket.on('request received', (user) => {
-      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
-    })
-    socket.on('remove relationship', userId => {
+    socket?.on('remove relationship', userId => {
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.filter(item => item.user._id !== userId)})))
     })
-}, [socket])
+}, [id])
 
   return (
     <div className='fullwidth flex'>

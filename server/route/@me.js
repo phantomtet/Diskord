@@ -22,10 +22,10 @@ router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // 
         const targetId = mongoose.Types.ObjectId(req.params.targetid)
         const target = await UserModel.findById(targetId)       // tim target theo id
         if (!target) return res.status(400).send({message: 'You are blocked or user is not existed'})
-        const user = target.relationship.find((item) => toString(item.user) === toString(selfId))
+        const yourself = target.relationship.find((item) => toString(item.user) === toString(selfId))
 
         // gui request den nguoi do
-        if (!user) {
+        if (!yourself) {
             const a = await UserModel.findByIdAndUpdate(target, {             
                 $push: { relationship: { user: selfId, status: 2} }
             }, { fields: userPrivateFields })
@@ -38,20 +38,21 @@ router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // 
             return res.send({ message: 'Request sent'})
         }
 
-        if (user.status === 1) return res.status(400).send({ message: 'You are already friend with this user' })     // ban da la friend voi nguoi nay roi
-        if (user.status === 2) return res.status(400).send({ message: 'You already sent request to this user' })     // ban da gui request roi
-        if (user.status === 4) return res.status(400).send({ message: 'You are blocked or user is not existed' })    // ban bi block
+        if (yourself.status === 1) return res.status(400).send({ message: 'You are already friend with this user' })     // ban da la friend voi nguoi nay roi
+        if (yourself.status === 2) return res.status(400).send({ message: 'You already sent request to this user' })     // ban da gui request roi
+        if (yourself.status === 4) return res.status(400).send({ message: 'You are blocked or user is not existed' })    // ban bi block
 
         // accept neu ng nay da gui friend request den ban
-        if (user.status === 3) {                                                                                     
-            await UserModel.findByIdAndUpdate(target, {
-                $pull: { relationship: { user: selfId }},       // xoa nhung relationship nao co field user = id cua minh
-                $push: { relationship: { user: selfId, status: 1 }}
-            })
-            await UserModel.findByIdAndUpdate(selfId, {
-                $pull: { relationship: { user: targetId }},     // xoa nhung relationship nao co field user = id cua doi phuong
-                $push: { relationship: { user: targetId, status: 1 }}
-            })
+        if (yourself.status === 3) {                                                                                     
+            const a = await UserModel.findOneAndUpdate({ _id: targetId, 'relationship.user': selfId }, {
+                $set: { 'relationship.$.status': 1}
+            }, { fields: userPrivateFields })
+            const b = await UserModel.findOneAndUpdate({ _id: selfId, 'relationship.user': targetId}, {
+                $set: { 'relationship.$.status': 1 }
+            }, { fields: userPrivateFields })
+            // trigger noti with socket
+            io.to(req.payloadFromJWT.id).emit('request accepted', { user: a, status: 1})
+            io.to(req.params.targetid).emit('request accepted', { user: b, status: 1})
             return res.send({ message: 'Accepted friend request' })                               
         }
     } catch (error) {
