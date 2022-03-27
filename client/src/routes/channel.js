@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { sendMessage, getMessage } from './../api/api';
-import Profile from './../components/Profile.component';
+import Profile from '../components/common/Profile.component';
 import { socket } from './../App';
-import MessageInput from './../components/MessageInput.component';
+import MessageInput from './../components/common/MessageInput.component';
 import { white1, grey } from "../misc/config";
+import { useSelector } from 'react-redux';
 
 const Channel = () => {
     // boiler plate
     const history = useHistory()
     const { guildId } = useParams()
     const { channelId } = useParams()
+
+    // redux state
+    const socket = useSelector(state => state.socket)
 
     // state
     const [guildData, setGuildData] = useState('loading')

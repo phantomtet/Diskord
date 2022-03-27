@@ -1,22 +1,44 @@
 import { TextField, Button, IconButton, Divider } from '@mui/material'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { black, black1 } from './../misc/config';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { black, black1 } from '../../misc/config';
 import PeopleIcon from '@mui/icons-material/People';
 import CastleIcon from '@mui/icons-material/Castle';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import MyStatus from './../components/MyStatus.component';
+import MyStatus from '../../components/common/MyStatus.component';
 import { useParams } from 'react-router-dom';
-import useHover from './../hooks/useHover';
+import useHover from '../../hooks/useHover';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import HelpIcon from '@mui/icons-material/Help';
 import InboxIcon from '@mui/icons-material/Inbox';
-import SearchIcon from '@mui/icons-material/Search';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useSelector, useDispatch } from 'react-redux';
+import { sendFriendRequestTo } from '../../api/api';
+import FriendList from './FriendList/FriendList';
+import IncomingRequestList from './IncomingFriendRequestList/IncomingRequestList';
+import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
 
 const Dashboard = () => {
+    // redux state
+    const socket = useSelector(state => state.socket)
 
+    // state
+    const [tab, setTab] = useState('All')
+    const List = useMemo(() => {
+        switch (tab) {
+            case 'All':
+                return <FriendList/>
+            case 'Online':
+                return <FriendList/>
+            case 'Incoming Requests':
+                return <IncomingRequestList/>
+            case 'Outgoing Requests':
+                return <OutgoingRequestList/>
+            case null:
+                return <AddFriendContainer/>
+            default:
+                return
+        }
+    }, [tab])
     return (
         <div 
         className='flex'
@@ -34,20 +56,23 @@ const Dashboard = () => {
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         <div style={{margin: '0 15px', alignItems:'center', display: 'flex'}}><PeopleIcon style={{marginRight: '5px'}}/> Friends</div>
                         <Divider variant='middle' orientation='vertical' flexItem style={{color: '#42454a', backgroundColor: '#42454a', width: '2px'}}/> 
+                        {
+                            ['All', 'Online', 'Incoming Requests', 'Outgoing Requests'].map(item =>
+                                <Button style={{color: tab === item ? 'white' : '#a4bbbe', textTransform: 'capitalize', marginRight: 20, fontWeight: 'bold'}}
+                                key={item}
+                                onClick={e => setTab(item)}
+                                >
+                                    {item}
+                                </Button>
+                            )
+
+                        }
                         <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Online</Button>
-                        </div>
-                        <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>All</Button>
-                        </div>
-                        <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Incoming Requests</Button>
-                        </div>
-                        <div>
-                            <Button style={{color: '#a4bbbe', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Outgoing Requests</Button>
-                        </div>
-                        <div>
-                            <Button size='small' style={{color: 'white', backgroundColor: '#3ca55d', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}>Add Friend</Button>
+                            <Button size='small' style={{color: tab === null ? '#3BA55D' : 'white', backgroundColor: tab === null ? '#36393F' : '#3ca55d', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}
+                            onClick={e => setTab(null)}
+                            >
+                                Add Friend
+                            </Button>
                         </div>
                     </div>
                     <div style={{display: 'flex', alignItems: 'center'}}>
@@ -64,7 +89,7 @@ const Dashboard = () => {
                     </div>
                 </div>
                 <div style={{height: 'calc(100% - 48px)', display: 'flex'}}>
-                    <FriendList/>
+                    {List}
                     <div style={{minWidth: 360, padding: '30px 8px 16px 16px', borderLeft: '1px solid #42454a'}}>
                         <h3 style={{color: 'white'}}>Active Now</h3>
                     </div>
@@ -131,58 +156,46 @@ const FriendButton = ({ onClose, onClick, isActive}) => {
     )
 }
 
-const FriendList = () => {
+const AddFriendContainer = () => {
     const [search, setSearch] = useState('')
-    const friendList = useSelector(state => state?.profile?.friends)
-
+    const initialResponse = useMemo(() => ({ status: null, message: ''}), [])
+    const [response, setResponse] = useState({...initialResponse})
+    const handleChange = e => {
+        setSearch(e.target.value)
+        setResponse(initialResponse)
+    }
+    const handleSearch = () => {
+        if (!search) return
+        sendFriendRequestTo(search).then((res) => {
+            setResponse({
+                status: res.status,
+                message: res.message
+            })
+        })
+    }
     return (
-        <div style={{width: '100%'}}>
-            {/* Search */}
-            <div style={{padding: '15px 20px 20px 30px'}}>
-                <TextField placeholder='Search'size='small' fullWidth autoComplete='new-password'
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                InputProps={{
-                    endAdornment: <IconButton onClick={() => setSearch('')} disabled={Boolean(!search)} size='small'>{!Boolean(search) ? <SearchIcon/> : <CloseIcon/>}</IconButton>,
-                    style: {backgroundColor: '#202225'}
-                }}
-                inputProps={{
-                    style: {color: '#cbcccd', backgroundColor: '#202225'}
-                }}
-                />
-                {/* All friends */}
-                <div style={{marginTop: 20, fontWeight: 'bolder', fontSize: 15}}>
-                    ALL FRIENDS - {friendList?.length || 0}
-                </div>
-            </div>
-            <div style={{ height: 'calc(100% - 114px)', overflow: 'hidden scroll', padding: '0px 20px 0px 30px'}}>
-                {
-                    friendList?.map((item, index) =>
-                        <FriendBiggerButton
-                        key={index}
-                        />
-                    )
-                }
-            </div>
-        </div>
-
-    )
-}
-
-const FriendBiggerButton = () => {
-    return (
-        <div className='canclick' style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between'}}>
-            <div style={{display: 'flex'}}>
-                <img className='avatar-32' style={{marginRight: 10}}/>
-                <div>
-                    <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>Nguyen Van A</div>
-                    <div style={{color: 'B9BBBE', fontSize: 13}}>Offline</div>
-                </div>
-            </div>
-            <div style={{display: 'flex'}}>
-                <IconButton><ChatBubbleIcon fontSize='small'/></IconButton>
-                <IconButton><MoreVertIcon fontSize='small'/></IconButton>
-            </div>
+        <div style={{padding: '15px 20px 20px 30px', width: '100%'}}>
+            <h4 style={{margin: '10px 0', color: 'white'}}>ADD FRIEND</h4>
+            <div style={{color: '#B9BBBE', fontSize: 14}}>You can add a friend with their Diskord tag. It's cAsE sEnSiTiVe!</div>
+            <TextField placeholder='Search'size='small' fullWidth autoComplete='new-password'
+            style={{margin: '20px 0 10px 0'}}
+            value={search}
+            onChange={handleChange}
+            InputProps={{
+                endAdornment: 
+                    <Button size='small' className='test'
+                    style={{backgroundColor: '#5865F2', color: 'white', textTransform: 'capitalize', fontWeight: 'bold', margin: '10px 0', cursor: search ? 'pointer' : 'not-allowed', width: 200}}
+                    onClick={handleSearch} 
+                    >
+                        Send Friend Request
+                    </Button>,
+                style: {backgroundColor: '#202225'}
+            }}
+            inputProps={{
+                style: {color: '#cbcccd', backgroundColor: '#202225'}
+            }}
+            />
+            <div style={{ color: response.status === 200 ? '#4FDC7C' : '#ED4245'}}>{response.message}</div>
         </div>
     )
 }

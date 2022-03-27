@@ -2,11 +2,16 @@
 import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setProfile } from '../store/profile';
+import { setProfile } from '../../store/profile';
 
 const Sidebar = () => {
     const dispatch = useDispatch()
     const history = useHistory()
+
+    const handleLogout = () => {
+        localStorage.setItem('diskordToken', null)
+        dispatch(setProfile(null))
+    }
     return (
         <div
         style={{
@@ -14,8 +19,9 @@ const Sidebar = () => {
         }}
         >
             Sidebar
-            <Button onClick={() => history.push('/')}>a</Button>
-            <Button onClick={() => history.push('/@me')}>b</Button>
+            <Button onClick={() => history.push('/')}>/</Button>
+            <Button onClick={() => history.push('/@me')}>me</Button>
+            <Button onClick={handleLogout}>Log out</Button>
         </div>
     )
 }

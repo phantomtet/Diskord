@@ -5,7 +5,7 @@ import { signIn } from '../api/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { setProfile } from '../store/profile';
 import { useHistory } from 'react-router-dom';
-
+import { createConnection } from '../socket';
 const SignIn = () => {
     // hook
     const dispatch = useDispatch()
@@ -26,6 +26,8 @@ const SignIn = () => {
         if (res.success) {
             dispatch(setProfile(res.data))
             localStorage.setItem('diskordToken', res.token)
+            createConnection(res.data._id)
+            history.push('/@me')
         }
         else {
             setEmailError(res.message)

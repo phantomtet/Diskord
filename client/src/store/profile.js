@@ -5,7 +5,13 @@ const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
-        setProfile: (state, action) => action.payload
+        setProfile: (state, action) => {
+            if (!action.payload) {
+                localStorage.removeItem('diskordToken')
+                return null
+            }
+            return action.payload
+        }
     },
 })
 

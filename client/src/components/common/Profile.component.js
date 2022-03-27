@@ -1,7 +1,7 @@
 import { ClickAwayListener, Divider, Popper } from "@mui/material"
 import { Fragment, useState, useRef, useEffect } from "react"
-import { getUser } from "../api/api"
-import { black1, white1, black } from './../misc/config';
+import { getUser } from "../../api/api"
+import { black1, white1, black } from '../../misc/config';
 
 const Profile = ({children, id}) => {
     const [isOpen, setIsOpen] = useState(false)

@@ -16,14 +16,24 @@ dotenv.config()
 const app = express()
 mongoose.connect(process.env.CONNECTION_URL)
 
+var clients = []
 const server = createServer(app)
 export const io = new Server(server, {
     cors: {
         origin: 'http://localhost:3000'
     }
 })
-io.on('connection', socket => {
+io.on('connection', (socket) => {
+    clients.push({
+        socketId: socket.id,
+        userId: socket.handshake.query.userId
+    })
+    // console.log('someone connect, current connected is ', clients)
     // receive message
+    socket.on('disconnect', reason => {
+        clients = clients.filter(item => item.socketId !== socket.id)
+        // console.log('someone disconnect', clients)
+    })
 })
 // middleware
 app.use(express.json())

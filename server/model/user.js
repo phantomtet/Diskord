@@ -48,18 +48,24 @@ const userSchema = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'dm'
     }],
-    friends: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'User'
+    relationship: [{
+        user: {
+            type: mongoose.Types.ObjectId,
+            ref: 'User'
+        },
+        status: {
+            type: Number,
+            required: true
+        },
     }],
-    incomingFriendRequests: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'User'
-    }],
-    outgoingFriendRequests: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'User'
-    }],
+    // incomingFriendRequests: [{
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'User'
+    // }],
+    // outgoingFriendRequests: [{
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'User'
+    // }],
 })
 export const userPrivateFields = {
     dms: 0,
@@ -67,9 +73,9 @@ export const userPrivateFields = {
     channels: 0,
     email: 0,
     password: 0,
-    friends: 0,
-    incomingFriendRequests: 0,
-    outcomingFriendRequests: 0,
+    relationship: 0,
+    // incomingFriendRequests: 0,
+    // outgoingFriendRequests: 0,
 }
 const profileSchema = mongoose.Schema({
     // required
