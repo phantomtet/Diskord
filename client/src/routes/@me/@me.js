@@ -1,6 +1,6 @@
-import { TextField, Button, IconButton, Divider } from '@mui/material'
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { black, black1 } from '../../misc/config';
+import { Button, IconButton, Divider } from '@mui/material'
+import React, { useMemo, useState } from 'react'
+import { black } from '../../misc/config';
 import PeopleIcon from '@mui/icons-material/People';
 import CastleIcon from '@mui/icons-material/Castle';
 import AddIcon from '@mui/icons-material/Add';
@@ -12,22 +12,17 @@ import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import HelpIcon from '@mui/icons-material/Help';
 import InboxIcon from '@mui/icons-material/Inbox';
 import { useSelector, useDispatch } from 'react-redux';
-import { sendFriendRequestTo } from '../../api/api';
 import FriendList from './FriendList/FriendList';
 import IncomingRequestList from './IncomingFriendRequestList/IncomingRequestList';
 import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
+import AddFriendContainer from './AddFriend/AddFriendContainer';
 
 const Dashboard = () => {
-    // redux state
-    const socket = useSelector(state => state.socket)
-
     // state
     const [tab, setTab] = useState('All')
     const List = useMemo(() => {
         switch (tab) {
             case 'All':
-                return <FriendList/>
-            case 'Online':
                 return <FriendList/>
             case 'Incoming Requests':
                 return <IncomingRequestList/>
@@ -56,17 +51,20 @@ const Dashboard = () => {
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         <div style={{margin: '0 15px', alignItems:'center', display: 'flex'}}><PeopleIcon style={{marginRight: '5px'}}/> Friends</div>
                         <Divider variant='middle' orientation='vertical' flexItem style={{color: '#42454a', backgroundColor: '#42454a', width: '2px'}}/> 
-                        {
-                            ['All', 'Online', 'Incoming Requests', 'Outgoing Requests'].map(item =>
-                                <Button style={{color: tab === item ? 'white' : '#a4bbbe', textTransform: 'capitalize', marginRight: 20, fontWeight: 'bold'}}
-                                key={item}
-                                onClick={e => setTab(item)}
-                                >
-                                    {item}
-                                </Button>
-                            )
-
-                        }
+                            <Button style={{color: tab === 'All' ? 'white' : '#a4bbbe', textTransform: 'capitalize', marginRight: 20, fontWeight: 'bold'}}
+                            onClick={e => setTab('All')}
+                            >
+                                All
+                            </Button>
+                            <IncomingRequestButton
+                            active={tab === 'Incoming Requests'}
+                            onClick={e => setTab('Incoming Requests')}
+                            />
+                            <Button style={{color: tab === 'Outgoing Requests' ? 'white' : '#a4bbbe', textTransform: 'capitalize', marginRight: 20, fontWeight: 'bold'}}
+                            onClick={e => setTab('Outgoing Requests')}
+                            >
+                                Outgoing Requests
+                            </Button>
                         <div>
                             <Button size='small' style={{color: tab === null ? '#3BA55D' : 'white', backgroundColor: tab === null ? '#36393F' : '#3ca55d', textTransform: 'capitalize', margin: '0 5px', fontWeight: 'bold'}}
                             onClick={e => setTab(null)}
@@ -99,6 +97,17 @@ const Dashboard = () => {
     )
 }
 
+const IncomingRequestButton = ({active, onClick}) => {
+    const count = useSelector(state => state.profile?.relationship?.filter(item => item.status === 2).length)
+    return (
+        <Button style={{color: active ? 'white' : '#a4bbbe', textTransform: 'capitalize', marginRight: 20, fontWeight: 'bold'}}
+        onClick={onClick}
+        >
+            Incoming Requests {count > 0 && <span className='noti-icon'>{count}</span>}
+        </Button>
+
+    )
+}
 const LeftBar = React.memo(() => {
     const [select, setSelect] = useState(null)
     const { channelId } = useParams()
@@ -156,48 +165,5 @@ const FriendButton = ({ onClose, onClick, isActive}) => {
     )
 }
 
-const AddFriendContainer = () => {
-    const [search, setSearch] = useState('')
-    const initialResponse = useMemo(() => ({ status: null, message: ''}), [])
-    const [response, setResponse] = useState({...initialResponse})
-    const handleChange = e => {
-        setSearch(e.target.value)
-        setResponse(initialResponse)
-    }
-    const handleSearch = () => {
-        if (!search) return
-        sendFriendRequestTo(search).then((res) => {
-            setResponse({
-                status: res.status,
-                message: res.message
-            })
-        })
-    }
-    return (
-        <div style={{padding: '15px 20px 20px 30px', width: '100%'}}>
-            <h4 style={{margin: '10px 0', color: 'white'}}>ADD FRIEND</h4>
-            <div style={{color: '#B9BBBE', fontSize: 14}}>You can add a friend with their Diskord tag. It's cAsE sEnSiTiVe!</div>
-            <TextField placeholder='Search'size='small' fullWidth autoComplete='new-password'
-            style={{margin: '20px 0 10px 0'}}
-            value={search}
-            onChange={handleChange}
-            InputProps={{
-                endAdornment: 
-                    <Button size='small' className='test'
-                    style={{backgroundColor: '#5865F2', color: 'white', textTransform: 'capitalize', fontWeight: 'bold', margin: '10px 0', cursor: search ? 'pointer' : 'not-allowed', width: 200}}
-                    onClick={handleSearch} 
-                    >
-                        Send Friend Request
-                    </Button>,
-                style: {backgroundColor: '#202225'}
-            }}
-            inputProps={{
-                style: {color: '#cbcccd', backgroundColor: '#202225'}
-            }}
-            />
-            <div style={{ color: response.status === 200 ? '#4FDC7C' : '#ED4245'}}>{response.message}</div>
-        </div>
-    )
-}
 
 export default Dashboard

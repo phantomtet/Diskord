@@ -2,7 +2,7 @@
 import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { setProfile } from '../../store/profile';
+import { initializeProfile } from '../../store/profile';
 
 const Sidebar = () => {
     const dispatch = useDispatch()
@@ -10,7 +10,7 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.setItem('diskordToken', null)
-        dispatch(setProfile(null))
+        dispatch(initializeProfile(null))
     }
     return (
         <div

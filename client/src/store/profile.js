@@ -5,15 +5,21 @@ const profileSlice = createSlice({
     name: 'profile',
     initialState,
     reducers: {
-        setProfile: (state, action) => {
+        initializeProfile: (state, action) => {
             if (!action.payload) {
                 localStorage.removeItem('diskordToken')
                 return null
             }
             return action.payload
+        },
+        addRelationship: (state, action) => {
+            state?.relationship.push(action.payload)
+        },
+        setProfile: (state, action) => {
+            return action.payload(state)
         }
     },
 })
 
-export const { setProfile } = profileSlice.actions
+export const { initializeProfile, setProfile} = profileSlice.actions
 export default profileSlice.reducer

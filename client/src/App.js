@@ -5,13 +5,12 @@ import Sidebar from './components/layout/Sidebar.component';
 import Register from './routes/register';
 import { useEffect } from 'react';
 import Dashboard from './routes/@me/@me';
-
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { getMe } from './api/api';
-import { setProfile } from './store/profile';
+import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
-
+import { socket } from './socket'
 function App() {
   // hook
   const dispatch = useDispatch()
@@ -31,12 +30,25 @@ function App() {
       getMe().then(res => {
         if (res.status === 200) {
           createConnection(res.data._id)
-          dispatch(setProfile(res.data))
+          dispatch(initializeProfile(res.data))
         }
       })
       return
     }
   }, [id])
+  useEffect(() => {
+    if (!socket) return
+    socket.on('request sent', (user) => {
+      console.log(user)
+      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+    })
+    socket.on('request received', (user) => {
+      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+    })
+    socket.on('remove relationship', userId => {
+      dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.filter(item => item.user._id !== userId)})))
+    })
+}, [socket])
 
   return (
     <div className='fullwidth flex'>

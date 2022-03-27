@@ -3,7 +3,7 @@ import verifyToken from "../middleware/authorization.js";
 import { UserModel, ProfileModel, userPrivateFields } from './../model/user.js';
 import { DirectMessageModel } from './../model/DM.js';
 import mongoose from "mongoose";
-
+import { io, clients } from '../index.js'
 const router = express.Router()
 
 router.get('/', verifyToken, async (req, res) => {
@@ -16,25 +16,34 @@ router.get('/', verifyToken, async (req, res) => {
 })
 // relationship: 1 - friend, 2 - incoming, 3 - outgoing, 4 - block
 router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // send friend request
+    if (req.params.targetid === req.payloadFromJWT.id) return res.status(400).send({ message: 'You cant add yourself!'})
     try {
         const selfId = mongoose.Types.ObjectId(req.payloadFromJWT.id)
         const targetId = mongoose.Types.ObjectId(req.params.targetid)
         const target = await UserModel.findById(targetId)       // tim target theo id
         if (!target) return res.status(400).send({message: 'You are blocked or user is not existed'})
         const user = target.relationship.find((item) => toString(item.user) === toString(selfId))
+
+        // gui request den nguoi do
         if (!user) {
-            await UserModel.findByIdAndUpdate(target, {             // gui request den nguoi do
+            const a = await UserModel.findByIdAndUpdate(target, {             
                 $push: { relationship: { user: selfId, status: 2} }
-            })
-            await UserModel.findByIdAndUpdate(selfId, {
+            }, { fields: userPrivateFields })
+            const b = await UserModel.findByIdAndUpdate(selfId, {
                 $push: { relationship: { user: targetId, status: 3} }
-            })
+            }, { fields: userPrivateFields })
+            // trigger noti with socket
+            io.to(req.payloadFromJWT.id).emit('request sent', { user: a, status: 3})
+            io.to(req.params.targetid).emit('request received', { user: b, status: 2})
             return res.send({ message: 'Request sent'})
         }
+
         if (user.status === 1) return res.status(400).send({ message: 'You are already friend with this user' })     // ban da la friend voi nguoi nay roi
         if (user.status === 2) return res.status(400).send({ message: 'You already sent request to this user' })     // ban da gui request roi
         if (user.status === 4) return res.status(400).send({ message: 'You are blocked or user is not existed' })    // ban bi block
-        if (user.status === 3) {                                                                                     // accept neu ng nay da gui friend request den ban
+
+        // accept neu ng nay da gui friend request den ban
+        if (user.status === 3) {                                                                                     
             await UserModel.findByIdAndUpdate(target, {
                 $pull: { relationship: { user: selfId }},       // xoa nhung relationship nao co field user = id cua minh
                 $push: { relationship: { user: selfId, status: 1 }}
@@ -47,17 +56,20 @@ router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // 
         }
     } catch (error) {
         console.log(error)
-        res.status(500).send(error)
+        res.status(400).send({ message: 'You are blocked or user is not existed' })
     }
 })
 router.delete('/relationship/:targetid', verifyToken, async (req, res) => {     // send friend request
+    if (req.params.targetid === req.payloadFromJWT.id) return res.status(400).send({ message: 'Stop do this!'})
     try {
         const selfId = mongoose.Types.ObjectId(req.payloadFromJWT.id)
         const targetId = mongoose.Types.ObjectId(req.params.targetid)
         const target = await UserModel.findById(targetId)       // tim target theo id
+
         if (!target) return res.status(400).send({message: 'You are blocked or user is not existed'})
         const user = target.relationship.find((item) => toString(item.user) === toString(selfId))
         if (!user) return res.status(400).send({ message: 'You dont have relationship with this user'})                                                       // neu khong co relationship voi nguoi nay
+
         if ([1,2,3].includes(user.status)) {
             await UserModel.findByIdAndUpdate(target, {
                 $pull: { relationship: { user: selfId }},       // xoa nhung relationship nao co field user = id cua minh
@@ -65,12 +77,14 @@ router.delete('/relationship/:targetid', verifyToken, async (req, res) => {     
             await UserModel.findByIdAndUpdate(selfId, {
                 $pull: { relationship: { user: targetId }},     // xoa nhung relationship nao co field user = id cua doi phuong
             })
+            // trigger noti with socket
+            io.to(req.params.targetid).emit('remove relationship', req.payloadFromJWT.id)
+            io.to(req.payloadFromJWT.id).emit('remove relationship', req.params.targetid)
             return res.send({ message: 'Delete relationship successfully'})
         }
         if (user.status === 4) return res.status(400).send({ message: 'You are blocked or user is not existed' })    // ban bi block
     } catch (error) {
-        console.log(error)
-        return res.status(400).send({message: 'You are blocked or user is not existed'})}
+        res.status(400).send({ message: 'You are blocked or user is not existed'})}
 })
 router.post('/channel', verifyToken, async (req, res) => {
     const { recipients } = req.body

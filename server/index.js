@@ -9,14 +9,13 @@ import signInRouter from './route/signin.js'
 import registerRouter from './route/register.js'
 import channelRouter from './route/channel.js'
 import meRouter from './route/@me.js'
-import multer from 'multer';
 dotenv.config()
 
 
 const app = express()
 mongoose.connect(process.env.CONNECTION_URL)
 
-var clients = []
+export var clients = []
 const server = createServer(app)
 export const io = new Server(server, {
     cors: {
@@ -28,7 +27,7 @@ io.on('connection', (socket) => {
         socketId: socket.id,
         userId: socket.handshake.query.userId
     })
-    // console.log('someone connect, current connected is ', clients)
+    socket.join(socket.handshake.query.userId)
     // receive message
     socket.on('disconnect', reason => {
         clients = clients.filter(item => item.socketId !== socket.id)
