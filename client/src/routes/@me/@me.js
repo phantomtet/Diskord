@@ -109,8 +109,14 @@ const IncomingRequestButton = ({active, onClick}) => {
     )
 }
 const LeftBar = React.memo(() => {
-    const [select, setSelect] = useState(null)
+    // hook
     const { channelId } = useParams()
+
+    // redux state
+    const dms = useSelector(state => state.profile?.dms)
+    
+    // state
+    const [select, setSelect] = useState(null)
 
     return (
         <div className='leftbar' style={{backgroundColor: '#2f3136'}}>
@@ -134,10 +140,11 @@ const LeftBar = React.memo(() => {
                         <IconButton size='small'><AddIcon/></IconButton>
                     </div>
                     {
-                        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1].map((item, index) =>
+                        [1,1].map((item, index) =>
                             <FriendButton
                             key={index}
-                            onClick={() => setSelect(index)}
+                            index={index}
+                            onClick={setSelect}
                             onClose={() => console.log(2)}
                             isActive={channelId === item}
                             />
@@ -151,16 +158,20 @@ const LeftBar = React.memo(() => {
     )
 })
 
-const FriendButton = ({ onClose, onClick, isActive}) => {
+const FriendButton = ({ onClose, onClick, isActive, index}) => {
     const dispatch = useDispatch()
     const [hover, ref] = useHover()
+
+    const handleClick = e => {
+        onClick(index)
+    }
     return (
         <Button ref={ref} fullWidth style={{backgroundColor: black, margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', padding: '0 5px 0 0'}}>
             <div onClick={onClick} style={{alignItems: 'center', display: 'flex', color: isActive ? 'white' : 'lightgray', width: '100%', padding: 5}}>
                 <img className='avatar-32' style={{margin: '0 10px'}}/>
                 Friends
             </div>
-            <div>{hover && <IconButton onClick={onClose} size='small' style={{margin: '-2px'}}><CloseIcon/></IconButton>}</div>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{hover && <CloseIcon  style={{marginRight: 10}} onClick={onClose}/>}</div>
         </Button>
     )
 }
