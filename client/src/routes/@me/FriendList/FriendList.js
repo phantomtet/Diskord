@@ -9,7 +9,7 @@ import { deleteRelationship } from './../../../api/api';
 
 const FriendList = () => {
     const [search, setSearch] = useState('')
-    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 1))
+    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 1 && item.user?.username.includes(search)))
     const [dialogOpen, setDialogOpen] = useState(null)
     const handleRemoveFriend = useCallback((data) => {
         setDialogOpen(data.user)
@@ -39,7 +39,7 @@ const FriendList = () => {
                         <FriendListItem
                         onRemoveFriend={handleRemoveFriend}
                         key={index}
-                        data={item}
+                        data={item.user}
                         />
                     )
                 }

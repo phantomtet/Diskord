@@ -7,7 +7,7 @@ import { deleteRelationship } from './../../../api/api';
 
 const OutgoingRequestList = () => {
     const [search, setSearch] = useState('')
-    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 3))
+    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 3 && item.user?.username.includes(search)))
 
     return (
         <div style={{width: '100%'}}>
@@ -42,7 +42,7 @@ const OutgoingRequestList = () => {
 
     )
 }
-const ListItem = ({data}) => {
+const ListItem = React.memo(({data}) => {
     const dispatch = useDispatch()
     const relationship = useSelector(state => state?.profile?.relationship)
 
@@ -64,5 +64,5 @@ const ListItem = ({data}) => {
         </div>
     )
 }
-
+)
 export default OutgoingRequestList

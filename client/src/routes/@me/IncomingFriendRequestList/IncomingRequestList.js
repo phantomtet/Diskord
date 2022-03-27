@@ -10,7 +10,7 @@ import { deleteRelationship } from './../../../api/api';
 
 const IncomingRequestList = () => {
     const [search, setSearch] = useState('')
-    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 2))
+    const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 2 && item.user?.username.includes(search)))
 
     return (
         <div style={{width: '100%'}}>
@@ -61,8 +61,8 @@ const ListItem = ({data}) => {
                 </div>
             </div>
             <div style={{display: 'flex'}}>
-                <IconButton><CheckIcon onClick={handleAccept} fontSize='small'/></IconButton>
-                <IconButton><CloseIcon onClick={handleDecline} fontSize='small'/></IconButton>
+                <IconButton onClick={handleAccept}><CheckIcon fontSize='small'/></IconButton>
+                <IconButton onClick={handleDecline}><CloseIcon fontSize='small'/></IconButton>
             </div>
         </div>
     )
