@@ -12,7 +12,7 @@ const FriendList = () => {
     const list = useSelector(state => state?.profile?.relationship.filter(item => item.status === 1 && item.user?.username.includes(search)))
     const [dialogOpen, setDialogOpen] = useState(null)
     const handleRemoveFriend = useCallback((data) => {
-        setDialogOpen(data.user)
+        setDialogOpen(data)
     }, [])
     return (
         <div style={{width: '100%'}}>
