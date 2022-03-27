@@ -33,6 +33,7 @@ io.on('connection', (socket) => {
         clients = clients.filter(item => item.socketId !== socket.id)
         // console.log('someone disconnect', clients)
     })
+    console.log('current clients', clients)
 })
 // middleware
 app.use(express.json())

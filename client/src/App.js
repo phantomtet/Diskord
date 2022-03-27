@@ -11,6 +11,7 @@ import { getMe } from './api/api';
 import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
+
 function App() {
   // hook
   const dispatch = useDispatch()

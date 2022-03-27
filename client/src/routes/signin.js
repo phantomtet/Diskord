@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { white1, grey, red, white } from '../misc/config';
 import { signIn } from '../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProfile } from '../store/profile';
+import { initializeProfile } from '../store/profile';
 import { useHistory } from 'react-router-dom';
 import { createConnection } from '../socket';
 const SignIn = () => {
@@ -24,7 +24,7 @@ const SignIn = () => {
     const handleResponse = (res) => {
         // alert(localStorage.getItem('diskordToken'))
         if (res.success) {
-            dispatch(setProfile(res.data))
+            dispatch(initializeProfile(res.data))
             localStorage.setItem('diskordToken', res.token)
             createConnection(res.data._id)
             history.push('/@me')
