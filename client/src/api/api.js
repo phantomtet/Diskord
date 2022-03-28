@@ -43,6 +43,7 @@ HTTP.interceptors.response.use(
 export const signIn = (data) => HTTP.post('/signin', data)
 export const register = (data) => HTTP.post('/register', data)
 export const getChannelData = (id) => HTTP.get(`/channel`, {params: {id}})
+export const createDM = (data, config) => HTTP.post('/channel', data, config)
 export const sendMessage = (id, ...config) => HTTP.post(`/channel/${id}/message`, ...config)
 export const getMessage = (id, config) => HTTP.get(`/channel/${id}/message`, config)
 export const getUser = (id) => HTTP.get(`/user/${id}`)

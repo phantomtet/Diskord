@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import Dashboard from './routes/@me/@me';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
-import { getMe } from './api/api';
+import { createDM, getMe } from './api/api';
 import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'

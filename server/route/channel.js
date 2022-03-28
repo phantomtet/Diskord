@@ -7,6 +7,7 @@ import { io } from './../index.js';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import FileModel from './../model/file.js';
+import { DirectMessageModel } from './../model/DM.js';
 
 const router = express.Router()
 // file upload handle
@@ -62,5 +63,52 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
     // } catch (error) {
     //     res.status(500).send(error)
     // }
+})
+
+// create channel
+router.post('/', verifyToken, async (req, res) => {
+    try {
+        const getSelfData = await UserModel.findById(req.payloadFromJWT.id)
+        const myFriendIds = getSelfData.relationship.filter(item => item.status === 1).map(item => (item.user._id).toString())
+        // neu tat ca recipient deu nam trong list friend
+        if (req.body.recipients.every(item => myFriendIds.includes(item))) {
+            const totalRecipients = [...req.body.recipients, req.payloadFromJWT.id] .map(item => mongoose.Types.ObjectId(item))   // mang recipient ( bao gom ca ban than )
+            // neu day la inbox
+            // console.log(totalRecipients)
+            if (totalRecipients.length === 2) {
+                const find = await DirectMessageModel.findOne({
+                    'recipients.0.user': { $in: totalRecipients },
+                    'recipients.1.user': { $in: totalRecipients }
+                })
+                // console.log(find)
+                if (find) {
+                    const update = await DirectMessageModel.findOneAndUpdate({_id: find._id, 'recipients.user': req.payloadFromJWT.id}, {
+                        $set: { 'recipients.$.status': 1}
+                    })
+                }
+                // neu khong tim ra inbox (nghia la chua inbox lan nao) thi tao moi
+                if (!find) {
+                    const recipients = totalRecipients.map(item => item.toString() === req.payloadFromJWT.id ? { user: mongoose.Types.ObjectId(req.payloadFromJWT.id), status: 1} : {user: mongoose.Types.ObjectId(item), status: 0})
+                    const create = await DirectMessageModel.create({recipients})
+                }
+
+            }
+        }
+        res.send()
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
+})
+router.delete('/:channelId', verifyToken, async (req, res) => {
+    try {
+        const update = await DirectMessageModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(req.params.channelId), 'recipients.user': req.payloadFromJWT.id}, {
+            $set: { 'recipients.$.status': 0 }
+        })
+        res.send()
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
 })
 export default router

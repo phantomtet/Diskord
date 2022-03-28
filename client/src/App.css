@@ -150,3 +150,10 @@ code {
   background-color: #18191c;
   border-radius: 5px;
 }
+.canclick2 {
+  cursor: pointer;
+  transition: background-color 0.05s, box-shadow 0.25s;
+}
+.canclick2:hover {
+  box-shadow: inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1);
+}

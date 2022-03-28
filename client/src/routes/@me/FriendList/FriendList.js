@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { deleteRelationship } from './../../../api/api';
+import { createDM, deleteRelationship } from './../../../api/api';
 
 const FriendList = () => {
     const [search, setSearch] = useState('')
@@ -58,10 +58,13 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
         setAnchorEl(null)
         onRemoveFriend(data)
     }
+    const handleCreateDM = e => {
+        createDM({ recipients: [data._id] })
+    }
     return (
-        <div className='canclick' style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between'}}>
+        <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>
             <div style={{display: 'flex'}}>
-                <img className='avatar-32' style={{marginRight: 10}}/>
+                <img className='avatar-32' style={{margin: '0 10px'}}/>
                 <div>
                     <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>{data?.username}</div>
                     <div style={{color: 'B9BBBE', fontSize: 13}}>Online</div>   
