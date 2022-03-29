@@ -6,7 +6,7 @@ import CastleIcon from '@mui/icons-material/Castle';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import MyStatus from '../../components/common/MyStatus.component';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import useHover from '../../hooks/useHover';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import HelpIcon from '@mui/icons-material/Help';
@@ -109,20 +109,13 @@ const IncomingRequestButton = ({active, onClick}) => {
 
     )
 }
-const LeftBar = React.memo(() => {
+export const LeftBar = React.memo(() => {
     // hook
-    const { channelId } = useParams()
 
     // redux state
     const dms = useSelector(state => state.profile?.dms)
     
-    // state
-    const [select, setSelect] = useState(null)
-
     // method
-    const handleDeleteDM = useCallback((id) => {
-        deleteDM(id)
-    })
     return (
         <div className='leftbar' style={{backgroundColor: '#2f3136'}}>
             <div style={{height: 48, padding: '10px', backgroundColor: '#2f3136', borderBottom: '2px solid #2b2e33'}}>
@@ -130,7 +123,7 @@ const LeftBar = React.memo(() => {
                     Find or start a conversation
                 </div>
             </div>
-            <div className='scrollbox' style={{width: '100%', height: 'calc(100% - 100px)', padding: '5px 0 5px 5px'}}>
+            <div className='scrollbox' style={{width: '100%', height: 'calc(100% - 100px)', padding: 8}}>
                 <div className='scrollbox-content'>
                     <Button fullWidth style={{backgroundColor: black, color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize'}}>
                         <PeopleIcon style={{margin: '0 10px'}}/>
@@ -148,11 +141,7 @@ const LeftBar = React.memo(() => {
                         dms?.map((item, index) =>
                             <FriendButton
                             key={index}
-                            index={index}
                             data={item}
-                            onClick={setSelect}
-                            onClose={handleDeleteDM}
-                            isActive={channelId === item}
                             />
                         )
                     }
@@ -164,21 +153,33 @@ const LeftBar = React.memo(() => {
     )
 })
 
-const FriendButton = ({ onClose, onClick, isActive, index, data}) => {
-    const dispatch = useDispatch()
+const FriendButton = ({data}) => {
+    const history = useHistory()
+    const { channelId } = useParams()
     const [hover, ref] = useHover()
-
-    const handleClick = e => {
-        onClick(index)
+    const handleDeleteDM = () => {
+        deleteDM(data._id).then(res => {
+            if (res.status === 200) history.push('/@me')
+        })
     }
     return (
-        <Button ref={ref} fullWidth style={{backgroundColor: black, margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', padding: '0 5px 0 0'}}>
-            <div onClick={onClick} style={{alignItems: 'center', display: 'flex', color: isActive ? 'white' : 'lightgray', width: '100%', padding: 5}}>
+        <div className='canclick2' ref={ref} style={{backgroundColor: black, margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', padding: 0, display: 'flex', boxShadow: channelId === data._id ? 'inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1)' : 'none'}}>
+            <div onClick={() => history.push(`/channel/${data._id}`)} style={{alignItems: 'center', height: 42, display: 'flex', width: '100%', }}>
                 <img className='avatar-32' style={{margin: '0 10px'}}/>
-                Friends
+                <div style={{textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', width: '140px'}}>
+                    {
+                        !data?.isInbox ?
+                        <React.Fragment>
+                            <div>{data?.recipients.map(item => item.user.username).join(', ')}</div>
+                            <div align='left'>{data?.recipients?.length + 1} Members</div>
+                        </React.Fragment>
+                        :
+                        <div>{data?.recipients[0].user.username}</div>
+                    }
+                </div>
             </div>
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{hover && <CloseIcon  style={{marginRight: 10}} onClick={() => onClose(data._id)}/>}</div>
-        </Button>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{hover && <CloseIcon style={{marginRight: 10}} onClick={handleDeleteDM}/>}</div>
+        </div>
     )
 }
 

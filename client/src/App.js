@@ -1,9 +1,9 @@
-import { Switch, Route, useHistory } from 'react-router-dom'
+import { Switch, Route, useHistory, useParams } from 'react-router-dom'
 import SignIn from './routes/signin';
 import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
 import Register from './routes/register';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Dashboard from './routes/@me/@me';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,10 +16,10 @@ function App() {
   // hook
   const dispatch = useDispatch()
   const history = useHistory()
-
   // redux state
   const id = useSelector(state => state.profile?._id)
-
+  // state
+  const [loading, setLoading] = useState(false)
   // effect
   useEffect(() => {
     if (!localStorage.getItem('diskordToken')) {
@@ -28,10 +28,12 @@ function App() {
       return
     }
     if (!id) {
+      setLoading(true)
       getMe().then(res => {
         if (res.status === 200) {
           createConnection(res.data._id)
           dispatch(initializeProfile(res.data))
+          setLoading(false)
         }
       })
       return
@@ -58,26 +60,26 @@ function App() {
     })
     socket?.on('create dm', dm => {
       dispatch(setProfile(prev => !prev.dms.find(item => item._id === dm._id) ? ({...prev, dms: [dm, ...prev.dms] }) : prev))
-      history.push(`/asdasd/${dm._id}`)
+      history.push(`/channel/${dm._id}`)
     })
     socket?.on('delete dm', dmId => {
       dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
     })
-}, [id])
+    // socket?.on('message received', )
+  }, [id])
 
-  return (
+  if (!loading) return (
     <div className='fullwidth flex'>
       <Sidebar/>
       <div className='fullwidth'>
-          <Switch>
-            <Route exact path='/signin' component={SignIn}/>
-            <Route exact path='/register' component={Register}/>
-            <Route exact path='/channel/:channelId' component={Channel}/>
-            <Route exact path='/@me' component={Dashboard}/>
-          </Switch>
+        <Route exact path='/signin' component={SignIn}/>
+        <Route exact path='/register' component={Register}/>
+        <Route exact path='/channel/:channelId' component={Channel}/>
+        <Route exact path='/@me' component={Dashboard}/>
       </div>
     </div>
-  );
+  )
+  return ''
 }
 
 export default App;

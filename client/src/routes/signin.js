@@ -24,10 +24,11 @@ const SignIn = () => {
     const handleResponse = (res) => {
         // alert(localStorage.getItem('diskordToken'))
         if (res.success) {
-            dispatch(initializeProfile(res.data))
+            // dispatch(initializeProfile(res.data))
             localStorage.setItem('diskordToken', res.token)
-            createConnection(res.data._id)
-            history.push('/@me')
+            window.location.assign('/@me')
+            // createConnection(res.data._id)
+            // history.push('/@me')
         }
         else {
             setEmailError(res.message)

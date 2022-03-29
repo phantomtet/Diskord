@@ -17,7 +17,7 @@ router.get('/', verifyToken, async (req, res) => {
         ]).then(values => {
             const response = {
                 ...values[0]._doc,
-                dms: values[1]
+                dms: values[1].map(dm => ({...dm._doc, recipients: dm._doc.recipients.filter(item => item.user._id.toString() !== req.payloadFromJWT.id)})) // chi tra ve user khac voi ban than
             }
             // trigger noti
 

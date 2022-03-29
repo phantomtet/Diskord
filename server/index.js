@@ -25,15 +25,20 @@ export const io = new Server(server, {
 io.on('connection', (socket) => {
     clients.push({
         socketId: socket.id,
-        userId: socket.handshake.query.userId
+        userId: socket.handshake.query.userId,
+        focusedChannel: null
     })
     socket.join(socket.handshake.query.userId)
     // receive message
     socket.on('disconnect', reason => {
         clients = clients.filter(item => item.socketId !== socket.id)
-        // console.log('someone disconnect', clients)
+        console.log(clients)
     })
-    // console.log('current clients', clients)
+    socket.on('channel focus', channelId => {
+        clients = clients.map(client => client.socketId === socket.id ? {...client, focusedChannel: channelId} : client)
+        console.log(clients)
+    })
+    console.log(clients)
 })
 // middleware
 app.use(express.json())
