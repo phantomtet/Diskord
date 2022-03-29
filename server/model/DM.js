@@ -10,7 +10,11 @@ const directMessageSchema = mongoose.Schema({
             type: Number,
             required: true
         }
-    }]
+    }],
+    isInbox: {
+        type: Boolean,
+        required: true
+    }
 })
 
 export const DirectMessageModel = mongoose.model('dm', directMessageSchema)

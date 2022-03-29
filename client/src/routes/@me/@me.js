@@ -1,5 +1,5 @@
 import { Button, IconButton, Divider } from '@mui/material'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { black } from '../../misc/config';
 import PeopleIcon from '@mui/icons-material/People';
 import CastleIcon from '@mui/icons-material/Castle';
@@ -16,6 +16,7 @@ import FriendList from './FriendList/FriendList';
 import IncomingRequestList from './IncomingFriendRequestList/IncomingRequestList';
 import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
 import AddFriendContainer from './AddFriend/AddFriendContainer';
+import { deleteDM } from './../../api/api';
 
 const Dashboard = () => {
     // state
@@ -118,6 +119,10 @@ const LeftBar = React.memo(() => {
     // state
     const [select, setSelect] = useState(null)
 
+    // method
+    const handleDeleteDM = useCallback((id) => {
+        deleteDM(id)
+    })
     return (
         <div className='leftbar' style={{backgroundColor: '#2f3136'}}>
             <div style={{height: 48, padding: '10px', backgroundColor: '#2f3136', borderBottom: '2px solid #2b2e33'}}>
@@ -140,12 +145,13 @@ const LeftBar = React.memo(() => {
                         <IconButton size='small'><AddIcon/></IconButton>
                     </div>
                     {
-                        [1,1].map((item, index) =>
+                        dms?.map((item, index) =>
                             <FriendButton
                             key={index}
                             index={index}
+                            data={item}
                             onClick={setSelect}
-                            onClose={() => console.log(2)}
+                            onClose={handleDeleteDM}
                             isActive={channelId === item}
                             />
                         )
@@ -158,7 +164,7 @@ const LeftBar = React.memo(() => {
     )
 })
 
-const FriendButton = ({ onClose, onClick, isActive, index}) => {
+const FriendButton = ({ onClose, onClick, isActive, index, data}) => {
     const dispatch = useDispatch()
     const [hover, ref] = useHover()
 
@@ -171,7 +177,7 @@ const FriendButton = ({ onClose, onClick, isActive, index}) => {
                 <img className='avatar-32' style={{margin: '0 10px'}}/>
                 Friends
             </div>
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{hover && <CloseIcon  style={{marginRight: 10}} onClick={onClose}/>}</div>
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{hover && <CloseIcon  style={{marginRight: 10}} onClick={() => onClose(data._id)}/>}</div>
         </Button>
     )
 }

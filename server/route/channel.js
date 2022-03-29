@@ -1,6 +1,6 @@
 import express from 'express'
 import verifyToken from './../middleware/authorization.js';
-import { UserModel } from './../model/user.js';
+import { UserModel, userPrivateFields } from './../model/user.js';
 import { MessageModel } from './../model/message.js';
 import { ChannelModel } from './../model/channel.js';
 import { io } from './../index.js';
@@ -40,7 +40,7 @@ router.get('/:channelId/message', verifyToken, async (req, res) => {
     }
 })
 router.post('/:channelId/message', verifyToken, upload.array('files', 3), async (req, res) => {
-    // try {
+    try {
         const uploadFile = await FileModel.insertMany(req.files.map(file => ({
             filename: file.filename,
             content: {
@@ -60,9 +60,10 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
         const message = await createMessage.populate([{path: 'author', 'email': 0}])
         io.emit('client send message', message)
         res.status(200).send(message)
-    // } catch (error) {
-    //     res.status(500).send(error)
-    // }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
 })
 
 // create channel
@@ -70,6 +71,7 @@ router.post('/', verifyToken, async (req, res) => {
     try {
         const getSelfData = await UserModel.findById(req.payloadFromJWT.id)
         const myFriendIds = getSelfData.relationship.filter(item => item.status === 1).map(item => (item.user._id).toString())
+        let dm
         // neu tat ca recipient deu nam trong list friend
         if (req.body.recipients.every(item => myFriendIds.includes(item))) {
             const totalRecipients = [...req.body.recipients, req.payloadFromJWT.id] .map(item => mongoose.Types.ObjectId(item))   // mang recipient ( bao gom ca ban than )
@@ -79,21 +81,23 @@ router.post('/', verifyToken, async (req, res) => {
                 const find = await DirectMessageModel.findOne({
                     'recipients.0.user': { $in: totalRecipients },
                     'recipients.1.user': { $in: totalRecipients }
-                })
+                }).populate('recipients.user', userPrivateFields)
                 // console.log(find)
                 if (find) {
-                    const update = await DirectMessageModel.findOneAndUpdate({_id: find._id, 'recipients.user': req.payloadFromJWT.id}, {
+                    dm = await DirectMessageModel.findOneAndUpdate({_id: find._id, 'recipients.user': req.payloadFromJWT.id}, {
                         $set: { 'recipients.$.status': 1}
-                    })
+                    }).populate('recipients.user', userPrivateFields)
                 }
                 // neu khong tim ra inbox (nghia la chua inbox lan nao) thi tao moi
                 if (!find) {
                     const recipients = totalRecipients.map(item => item.toString() === req.payloadFromJWT.id ? { user: mongoose.Types.ObjectId(req.payloadFromJWT.id), status: 1} : {user: mongoose.Types.ObjectId(item), status: 0})
-                    const create = await DirectMessageModel.create({recipients})
+                    dm = await DirectMessageModel.create({recipients, isInbox: true})
                 }
 
             }
         }
+        // trigger noti
+        io.to(req.payloadFromJWT.id).emit('create dm', dm)
         res.send()
     } catch (error) {
         console.log(error)
@@ -105,6 +109,8 @@ router.delete('/:channelId', verifyToken, async (req, res) => {
         const update = await DirectMessageModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(req.params.channelId), 'recipients.user': req.payloadFromJWT.id}, {
             $set: { 'recipients.$.status': 0 }
         })
+        // trigger noti
+        io.to(req.payloadFromJWT.id).emit('delete dm', req.params.channelId)
         res.send()
     } catch (error) {
         console.log(error)

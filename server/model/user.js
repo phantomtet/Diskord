@@ -44,10 +44,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Channel'
     }],
-    dms: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'dm'
-    }],
+    // dms: [{
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'dm'
+    // }],
     relationship: [{
         user: {
             type: mongoose.Types.ObjectId,
@@ -68,7 +68,7 @@ const userSchema = mongoose.Schema({
     // }],
 })
 export const userPrivateFields = {
-    dms: 0,
+    // dms: 0,
     guilds: 0,
     channels: 0,
     email: 0,

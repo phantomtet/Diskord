@@ -53,13 +53,17 @@ const FriendList = () => {
     )
 }
 const FriendListItem = React.memo(({data, onRemoveFriend}) => {
+    // redux state
+    const selfId = useSelector(state => state.profile?._id)
+    const dm = useSelector(state => state.profile?.dms?.find(item => item.isInbox && [data._id, selfId].every(sub_item => item.recipients.map(item => item.user._id).includes(sub_item)) ))
     const [anchorEl, setAnchorEl] = useState(null)
     const handleRemoveFriend = () => {
         setAnchorEl(null)
         onRemoveFriend(data)
     }
     const handleCreateDM = e => {
-        createDM({ recipients: [data._id] })
+        if (!dm) createDM({ recipients: [data._id] })
+        else console.log('already have dm')
     }
     return (
         <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>

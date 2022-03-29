@@ -8,9 +8,23 @@ const router = express.Router()
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const user = await UserModel.findById(req.payloadFromJWT.id, {password: 0}).populate('relationship.user', userPrivateFields)
-        return res.send(user._doc)
+        Promise.all([
+            UserModel.findById(req.payloadFromJWT.id, {password: 0}).populate('relationship.user', userPrivateFields),
+            DirectMessageModel.find({ 
+                recipients: { $elemMatch: { user: req.payloadFromJWT.id, status: 1}}
+            }).populate('recipients.user', userPrivateFields)
+
+        ]).then(values => {
+            const response = {
+                ...values[0]._doc,
+                dms: values[1]
+            }
+            // trigger noti
+
+            return res.send(response)
+        })
     } catch (error) {
+        console.log(error)
         res.status(500).send(error)
     }
 })
@@ -90,10 +104,10 @@ router.delete('/relationship/:targetid', verifyToken, async (req, res) => {     
 router.post('/channel', verifyToken, async (req, res) => {
     const { recipients } = req.body
     try {
-        const getChannel = await DirectMessageModel.findOne({ recipients: { $all: recipients } }).populate('recipients', {...userPrivateFields})
+        const getChannel = await DirectMessageModel.findOne({ recipients: { $all: recipients } }).populate('recipients', userPrivateFields)
         if (!getChannel) {
             const createDM = await DirectMessageModel.create({recipients})
-            const getChannelAgain = await DirectMessageModel.findOne({ recipients: { $all: recipients } }).populate('recipients', {...userPrivateFields})
+            const getChannelAgain = await DirectMessageModel.findOne({ recipients: { $all: recipients } }).populate('recipients', userPrivateFields)
             res.send(getChannelAgain)
         }
         else res.send(getChannel)

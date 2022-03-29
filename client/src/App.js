@@ -56,6 +56,13 @@ function App() {
     socket?.on('remove relationship', userId => {
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.filter(item => item.user._id !== userId)})))
     })
+    socket?.on('create dm', dm => {
+      dispatch(setProfile(prev => !prev.dms.find(item => item._id === dm._id) ? ({...prev, dms: [dm, ...prev.dms] }) : prev))
+      history.push(`/asdasd/${dm._id}`)
+    })
+    socket?.on('delete dm', dmId => {
+      dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
+    })
 }, [id])
 
   return (
