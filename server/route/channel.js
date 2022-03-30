@@ -41,6 +41,9 @@ router.get('/:channelId/message', verifyToken, async (req, res) => {
 })
 router.post('/:channelId/message', verifyToken, upload.array('files', 3), async (req, res) => {
     try {
+        // check if sender is in the channel
+        const check = await DirectMessageModel.findById(req.params.channelId)
+        if (!check.recipients.map(item => item.user.toString()).includes(req.payloadFromJWT.id)) return res.status(400).send({ message: 'You are not in this channel'}) 
         const uploadFile = await FileModel.insertMany(req.files.map(file => ({
             filename: file.filename,
             content: {
@@ -49,16 +52,14 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             }
         })))
         const createMessage = await MessageModel.create({
-            attachments: uploadFile.map(item => item._id),
+            attachments: uploadFile.map(item => mongoose.Types.ObjectId(item._id)),
             content: req.body.content,
             author: mongoose.Types.ObjectId(req.payloadFromJWT.id),
             channelId: req.params.channelId,
             createdAt: Date.now()
         })
-        const update = await ChannelModel.updateOne({_id: req.params.channelId}, { $push: { messages: mongoose.Types.ObjectId(createMessage._id) }})
-        console.log(update)
-        const message = await createMessage.populate([{path: 'author', 'email': 0}])
-        io.emit('client send message', message)
+        const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
+        io.to(req.params.channelId).emit('client send message', message)
         res.status(200).send(message)
     } catch (error) {
         console.log(error)

@@ -41,7 +41,7 @@ const MessageInput = ({onSubmit}) => {
             size='small'
             InputProps={{
                 startAdornment: <IconButton onClick={() => ref.current.click()} style={{marginRight: 10, backgroundColor: 'lightgray', width: 24, height: 24}}><AddIcon/></IconButton>,
-                style: { color: 'lightgray', backgroundColor: black, borderRadius: isFileChosen ? '0 0 10px 10px' : 10, maxHeight: '50vh',  overflow: 'auto'}
+                style: { color: 'lightgray', backgroundColor: '#40444b', borderRadius: isFileChosen ? '0 0 10px 10px' : 10, maxHeight: '50vh',  overflow: 'auto'}
             }}
             value={state.content}
             onChange={e => setState(prev => ({...prev, content: e.target.value}))}

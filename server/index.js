@@ -9,6 +9,7 @@ import signInRouter from './route/signin.js'
 import registerRouter from './route/register.js'
 import channelRouter from './route/channel.js'
 import meRouter from './route/@me.js'
+import { DirectMessageModel } from './model/DM.js';
 dotenv.config()
 
 
@@ -22,23 +23,32 @@ export const io = new Server(server, {
         origin: 'http://localhost:3000'
     }
 })
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
+    socket.on('disconnect', reason => {
+        clients = clients.filter(item => item.socketId !== socket.id)
+        console.log(clients)
+    })
+    // get all channel which the use is in
+    const channels = await DirectMessageModel.find({'recipients.user': socket.handshake.query.userId})
+    channels.forEach(channel => {
+        socket.join(channel._id.toString())
+    })
     clients.push({
         socketId: socket.id,
         userId: socket.handshake.query.userId,
         focusedChannel: null
     })
     socket.join(socket.handshake.query.userId)
-    // receive message
-    socket.on('disconnect', reason => {
-        clients = clients.filter(item => item.socketId !== socket.id)
-        console.log(clients)
+
+    // leave channel
+    socket.on('leave channel', channelId => {
+        socket.leave(channelId)
     })
+    // receive message
     socket.on('channel focus', channelId => {
         clients = clients.map(client => client.socketId === socket.id ? {...client, focusedChannel: channelId} : client)
         console.log(clients)
     })
-    console.log(clients)
 })
 // middleware
 app.use(express.json())
