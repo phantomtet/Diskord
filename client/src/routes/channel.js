@@ -42,15 +42,18 @@ const Channel = () => {
             }
         })
     }
-    // effect
+    // effect dang bi loi
     useEffect(() => {
+        console.log(channelId)
         socket?.on('client send message', msg => {
-            console.log('hey', msg)
             setChat(prev => [msg,...prev])
         })
-        socket?.emit('channel focus', channelId)
         channelId && handleFetchNextData()
-        return () => socket?.emit('channel focus', null)
+        socket?.emit('channel focus', channelId)
+        return () => {
+            socket?.off('channel focus')
+            socket?.emit('channel focus', null)
+        }
     }, [channelId])
 
     return (

@@ -49,6 +49,7 @@ io.on('connection', async (socket) => {
         clients = clients.map(client => client.socketId === socket.id ? {...client, focusedChannel: channelId} : client)
         console.log(clients)
     })
+    console.log(clients)
 })
 // middleware
 app.use(express.json())

@@ -58,6 +58,10 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             channelId: req.params.channelId,
             createdAt: Date.now()
         })
+        DirectMessageModel.findOne({_id: req.params.channelId}).then(doc => {
+            doc.recipients = doc.recipients.map(item => ({...item._doc, status: 1}))
+            doc.save()
+        })
         const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
         io.to(req.params.channelId).emit('client send message', message)
         res.status(200).send(message)
