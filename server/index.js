@@ -8,8 +8,9 @@ import userRouter from './route/user.js'
 import signInRouter from './route/signin.js'
 import registerRouter from './route/register.js'
 import channelRouter from './route/channel.js'
-import meRouter from './route/@me.js'
+import meRouter, { getUserProfile } from './route/@me.js'
 import { DirectMessageModel } from './model/DM.js';
+import jwt from 'jsonwebtoken';
 dotenv.config()
 
 
@@ -29,16 +30,19 @@ io.on('connection', async (socket) => {
         console.log(clients)
     })
     // get all channel which the use is in
-    const channels = await DirectMessageModel.find({'recipients.user': socket.handshake.query.userId})
+    const user = jwt.verify(socket.handshake.query.jwtToken, process.env.JWT_SECRET_KEY) 
+    const channels = await DirectMessageModel.find({'recipients.user': user.id}) 
+    const profile = await getUserProfile(user.id)
+    io.to(socket.id).emit('server send profile', profile)
     channels.forEach(channel => {
         socket.join(channel._id.toString())
     })
     clients.push({
         socketId: socket.id,
-        userId: socket.handshake.query.userId,
+        userId: user.id,
         focusedChannel: null
     })
-    socket.join(socket.handshake.query.userId)
+    socket.join(user.id)
 
     // leave channel
     socket.on('leave channel', channelId => {

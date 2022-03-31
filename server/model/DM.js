@@ -9,6 +9,10 @@ const directMessageSchema = mongoose.Schema({
         status: {
             type: Number,
             required: true
+        },
+        seen: {
+            type: Boolean,
+            default: true
         }
     }],
     isInbox: {

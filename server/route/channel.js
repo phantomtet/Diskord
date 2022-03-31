@@ -3,7 +3,7 @@ import verifyToken from './../middleware/authorization.js';
 import { UserModel, userPrivateFields } from './../model/user.js';
 import { MessageModel } from './../model/message.js';
 import { ChannelModel } from './../model/channel.js';
-import { io } from './../index.js';
+import { clients, io } from './../index.js';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import FileModel from './../model/file.js';
@@ -56,12 +56,16 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             content: req.body.content,
             author: mongoose.Types.ObjectId(req.payloadFromJWT.id),
             channelId: req.params.channelId,
-            createdAt: Date.now()
+            createdAt: Date.now() 
         })
-        DirectMessageModel.findOne({_id: req.params.channelId}).then(doc => {
-            doc.recipients = doc.recipients.map(item => ({...item._doc, status: 1}))
-            doc.save()
-        })
+        DirectMessageModel.findOne({_id: req.params.channelId}).populate('recipients.user', userPrivateFields).exec(async (err, doc) => {
+            // kiem tra xem ai dang focus, nguoi k focus se bi tao notify
+            const currentFocusedUserIds = [...clients.filter(client => client.focusedChannel === req.params.channelId).map(i => i.userId), req.payloadFromJWT.id]
+            doc.recipients = doc.recipients.map(item => ({...item._doc, status: 1, seen: currentFocusedUserIds.includes(item.user._id.toString()) ? true : false}))
+            const currentNotFocus = doc.recipients.filter(item => item.seen === false).map(i => i.user._id.toString())
+            await doc.save()
+            currentNotFocus.length && io.to(currentNotFocus).emit('trigger notification', doc)
+        }) 
         const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
         io.to(req.params.channelId).emit('client send message', message)
         res.status(200).send(message)
@@ -109,6 +113,7 @@ router.post('/', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
+// leave channel
 router.delete('/:channelId', verifyToken, async (req, res) => {
     try {
         const update = await DirectMessageModel.findOneAndUpdate({_id: mongoose.Types.ObjectId(req.params.channelId), 'recipients.user': req.payloadFromJWT.id}, {
@@ -117,6 +122,19 @@ router.delete('/:channelId', verifyToken, async (req, res) => {
         // trigger noti
         io.to(req.payloadFromJWT.id).emit('delete dm', req.params.channelId)
         res.send()
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error)
+    }
+})
+// seen
+router.put('/:channelId/seen', verifyToken, async (req, res) => {
+    try {
+        const update = await DirectMessageModel.updateOne({_id: req.params.channelId, 'recipients.user': req.payloadFromJWT._id}, {
+            $set: { 'recipients.$.seen': true }
+        })
+        if (update) io.to(req.payloadFromJWT.id).emit('seen channel', req.params.channelId)
+        if (update) res.send()
     } catch (error) {
         console.log(error)
         res.status(500).send(error)

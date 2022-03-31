@@ -1,20 +1,23 @@
 import React, { useEffect, useRef, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { sendMessage, getMessage } from './../api/api';
+import { sendMessage, getMessage, seenChannel } from './../api/api';
 import Profile from '../components/common/Profile.component';
 import MessageInput from './../components/common/MessageInput.component';
 import { white1, grey } from "../misc/config";
 import { socket } from './../socket';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { LeftBar } from "./@me/@me";
+import { setProfile } from "../store/profile";
 
 const Channel = () => {
     // boiler plate
     const history = useHistory()
     const { channelId } = useParams()
+    const dispatch = useDispatch()
 
     // redux state
     const selfId = useSelector(state => state.profile?._id)
+    const dm = useSelector(state => state.profile?.dms?.find(item => item._id === channelId))
     // state
     const [guildData, setGuildData] = useState('loading')
     const [chat, setChat] = useState([])
@@ -44,11 +47,12 @@ const Channel = () => {
     }
     // effect dang bi loi
     useEffect(() => {
-        console.log(channelId)
         socket?.on('client send message', msg => {
             setChat(prev => [msg,...prev])
         })
         channelId && handleFetchNextData()
+        console.log(dm, dm.recipients?.find(item => item.user._id === selfId).seen)
+        channelId && !dm.recipients?.find(item => item.user._id === selfId).seen && seenChannel(channelId).then(res => res.status === 200 && dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === selfId ? {...rec, seen: true} : rec) } : item)}) )))
         socket?.emit('channel focus', channelId)
         return () => {
             socket?.off('channel focus')

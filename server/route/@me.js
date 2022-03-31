@@ -6,23 +6,44 @@ import mongoose from "mongoose";
 import { io, clients } from '../index.js'
 const router = express.Router()
 
+export const getUserProfile = async (id) => {
+    let response
+    try {
+        const values = await Promise.all([
+            UserModel.findById(mongoose.Types.ObjectId(id), {password: 0}).populate('relationship.user', userPrivateFields),
+            DirectMessageModel.find({ 
+                recipients: { $elemMatch: { user: id, status: 1}}
+            }).populate('recipients.user', userPrivateFields)
+    
+        ])
+        return response = {
+            ...values[0]._doc,
+            dms: values[1] // chi tra ve user khac voi ban than
+        }
+    } catch (error) {
+        return error
+    }
+}
+
 router.get('/', verifyToken, async (req, res) => {
     try {
-        Promise.all([
-            UserModel.findById(req.payloadFromJWT.id, {password: 0}).populate('relationship.user', userPrivateFields),
-            DirectMessageModel.find({ 
-                recipients: { $elemMatch: { user: req.payloadFromJWT.id, status: 1}}
-            }).populate('recipients.user', userPrivateFields)
+        // Promise.all([
+        //     UserModel.findById(req.payloadFromJWT.id, {password: 0}).populate('relationship.user', userPrivateFields),
+        //     DirectMessageModel.find({ 
+        //         recipients: { $elemMatch: { user: req.payloadFromJWT.id, status: 1}}
+        //     }).populate('recipients.user', userPrivateFields)
 
-        ]).then(values => {
-            const response = {
-                ...values[0]._doc,
-                dms: values[1].map(dm => ({...dm._doc, recipients: dm._doc.recipients.filter(item => item.user._id.toString() !== req.payloadFromJWT.id)})) // chi tra ve user khac voi ban than
-            }
-            // trigger noti
+        // ]).then(values => {
+        //     const response = {
+        //         ...values[0]._doc,
+        //         dms: values[1].map(dm => ({...dm._doc, recipients: dm._doc.recipients.filter(item => item.user._id.toString() !== req.payloadFromJWT.id)})) // chi tra ve user khac voi ban than
+        //     }
+        //     // trigger noti
 
-            return res.send(response)
-        })
+        //     return res.send(response)
+        // })
+        const a = getUserProfile(req.payloadFromJWT.id)
+        res.send(a)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)

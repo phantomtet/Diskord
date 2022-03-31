@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { TextField, IconButton, MenuItem, Menu, Popper, ClickAwayListener, Box, Dialog, DialogTitle, DialogContent, Button, DialogActions } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -7,6 +7,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import { createDM, deleteRelationship } from './../../../api/api';
 import { useHistory } from 'react-router-dom';
+import { setProfile } from "../../../store/profile";
 
 const FriendList = () => {
     const [search, setSearch] = useState('')
@@ -56,6 +57,7 @@ const FriendList = () => {
 const FriendListItem = React.memo(({data, onRemoveFriend}) => {
     // hook
     const history = useHistory()
+    const dispatch = useDispatch()
     // redux state
     const selfId = useSelector(state => state.profile?._id)
     const dm = useSelector(state => state.profile?.dms?.find(item => item.isInbox && [data._id, selfId].every(sub_item => item.recipients.map(item => item.user._id).includes(sub_item)) ))
@@ -67,6 +69,7 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
         onRemoveFriend(data)
     }
     const handleCreateDM = e => {
+        // dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => true ? {...item, recipients: item.recipients.map(rec => rec.user._id === selfId ? {...rec, seen: true} : rec) } : item)}) ))
         if (!dm) createDM({ recipients: [data._id] })
         else history.push(`/channel/${dm._id}`)
     }
