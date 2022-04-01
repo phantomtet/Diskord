@@ -74,32 +74,35 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
         else history.push(`/channel/${dm._id}`)
     }
     return (
-        <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>
-            <div style={{display: 'flex'}}>
-                <img className='avatar-32' style={{margin: '0 10px'}}/>
-                <div>
-                    <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>{data?.username}</div>
-                    <div style={{color: 'B9BBBE', fontSize: 13}}>Online</div>   
+        <React.Fragment>
+            <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>
+                <div style={{display: 'flex', width: '100%'}}>
+                    <img className='avatar-32' style={{margin: '0 10px'}}/>
+                    <div>
+                        <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>{data?.username}</div>
+                        <div style={{color: 'B9BBBE', fontSize: 13}}>Online</div>   
+                    </div>
+                </div>
+                <div style={{display: 'flex'}}>
+                    <IconButton><ChatBubbleIcon fontSize='small'/></IconButton>
+                    <IconButton onClick={(e) => {e.stopPropagation(); setAnchorEl(prev => prev ? null : e.currentTarget)}}><MoreVertIcon fontSize='small'/></IconButton>
                 </div>
             </div>
-            <div style={{display: 'flex'}}>
-                <IconButton><ChatBubbleIcon fontSize='small'/></IconButton>
-                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}><MoreVertIcon fontSize='small'/></IconButton>
-                <Popper
-                className='popper'
-                open={Boolean(anchorEl)}
-                anchorEl={anchorEl}
-                >
-                    <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
-                        <Box style={{padding: 6}}>
-                            <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Video Call</MenuItem>
-                            <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Voice Call</MenuItem>
-                            <MenuItem style={{fontSize: 14, color: '#ED4245', minWidth: 170}} onClick={handleRemoveFriend}>Remove Friend</MenuItem>
-                        </Box>
-                    </ClickAwayListener>
-                </Popper>
-            </div>
-        </div>
+            <Popper
+            className='popper test'
+            open={Boolean(anchorEl)}
+            anchorEl={anchorEl}
+            >
+                <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
+                    <Box style={{padding: 6}}>
+                        <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Video Call</MenuItem>
+                        <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Voice Call</MenuItem>
+                        <MenuItem style={{fontSize: 14, color: '#ED4245', minWidth: 170}} onClick={handleRemoveFriend}>Remove Friend</MenuItem>
+                    </Box>
+                </ClickAwayListener>
+            </Popper>
+
+        </React.Fragment>
     )
 }
 )

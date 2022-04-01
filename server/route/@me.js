@@ -57,7 +57,7 @@ router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // 
         const targetId = mongoose.Types.ObjectId(req.params.targetid)
         const target = await UserModel.findById(targetId)       // tim target theo id
         if (!target) return res.status(400).send({message: 'You are blocked or user is not existed'})
-        const yourself = target.relationship.find((item) => toString(item.user) === toString(selfId))
+        const yourself = target.relationship.find((item) => item.user.toString() === selfId.toString())
 
         // gui request den nguoi do
         if (!yourself) {
@@ -73,9 +73,9 @@ router.put('/relationship/:targetid', verifyToken, async (req, res) => {     // 
             return res.send({ message: 'Request sent'})
         }
 
-        if (yourself.status === 1) return res.status(400).send({ message: 'You are already friend with this user' })     // ban da la friend voi nguoi nay roi
         if (yourself.status === 2) return res.status(400).send({ message: 'You already sent request to this user' })     // ban da gui request roi
         if (yourself.status === 4) return res.status(400).send({ message: 'You are blocked or user is not existed' })    // ban bi block
+        if (yourself.status === 1) return res.status(400).send({ message: 'You are already friend with this user' })     // ban da la friend voi nguoi nay roi
 
         // accept neu ng nay da gui friend request den ban
         if (yourself.status === 3) {                                                                                     
@@ -103,7 +103,7 @@ router.delete('/relationship/:targetid', verifyToken, async (req, res) => {     
         const target = await UserModel.findById(targetId)       // tim target theo id
 
         if (!target) return res.status(400).send({message: 'You are blocked or user is not existed'})
-        const user = target.relationship.find((item) => toString(item.user) === toString(selfId))
+        const user = target.relationship.find((item) => item.user.toString() === selfId.toString())
         if (!user) return res.status(400).send({ message: 'You dont have relationship with this user'})                                                       // neu khong co relationship voi nguoi nay
 
         if ([1,2,3].includes(user.status)) {
