@@ -130,11 +130,13 @@ router.delete('/:channelId', verifyToken, async (req, res) => {
 // seen
 router.put('/:channelId/seen', verifyToken, async (req, res) => {
     try {
-        const update = await DirectMessageModel.updateOne({_id: req.params.channelId, 'recipients.user': req.payloadFromJWT._id}, {
-            $set: { 'recipients.$.seen': true }
+        await DirectMessageModel.findById(req.params.channelId).then(async doc => {
+            doc.recipients = doc.recipients.map(item => item._doc.user.toString() === req.payloadFromJWT.id ? {...item._doc, seen: true} : item)
+            console.log(doc)
+            await doc.save() 
+            io.to(req.payloadFromJWT.id).emit('seen channel', req.params.channelId)
+            res.send()
         })
-        if (update) io.to(req.payloadFromJWT.id).emit('seen channel', req.params.channelId)
-        if (update) res.send()
     } catch (error) {
         console.log(error)
         res.status(500).send(error)

@@ -42,7 +42,6 @@ function App() {
   }, [id])
   useEffect(() => {
     if (!id) {
-      console.log('remove all listener')
       socket?.removeAllListeners()
       socket?.on('server send profile', profile => {
         dispatch(initializeProfile(profile))
@@ -58,7 +57,6 @@ function App() {
       dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
     })
     socket?.on('request accepted', (user) => {
-      console.log(user)
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item)})))
     })
     socket?.on('remove relationship', userId => {
@@ -72,7 +70,6 @@ function App() {
       dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
     })
     socket?.on('trigger notification', dm => {
-      console.log('trigger noti')
       dispatch(setProfile(prev => {
         return {...prev, dms: [dm,...prev.dms.filter(item => item._id !== dm._id)]}
       }))
@@ -85,7 +82,7 @@ function App() {
 
   if (!loading) return (
     <div className='fullwidth flex'>
-      <button onClick={() => dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === true ? {...item, recipients: item.recipients.map(rec => rec.user._id === id ? {...rec, seen: true} : rec) } : item)}) ))}>click</button>
+      {/* <button>click</button> */}
       <Sidebar/>
       <div className='fullwidth'>
         <Route exact path='/signin' component={SignIn}/>

@@ -21,13 +21,10 @@ HTTP.interceptors.request.use(config => {
   error => { Promise.reject(error) }
 )
 const responseSuccessHandler = response => {
-  console.log({status: response.status, message: response?.data?.message})
   return {status: response.status, message: response?.data?.message, data: response?.data}
 };
 
 const responseErrorHandler = error => {
-  // console.log({message: error.response?.data?.message, status: error.response?.status})
-  // eslint-disable-next-line eqeqeq
   if (error == 'Error: Network Error') {
     return {message: 'Could not connect to server, please try again later'}
   } 
