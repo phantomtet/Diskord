@@ -51,7 +51,6 @@ const Channel = () => {
             setChat(prev => [msg,...prev])
         })
         channelId && handleFetchNextData()
-        console.log(dm, dm.recipients?.find(item => item.user._id === selfId)?.seen)
         channelId && !dm.recipients?.find(item => item.user._id === selfId)?.seen && seenChannel(channelId).then(res => res.status === 200 && dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === selfId ? {...rec, seen: true} : rec) } : item)}) )))
         socket?.emit('channel focus', channelId)
         return () => {
