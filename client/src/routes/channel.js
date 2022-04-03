@@ -35,9 +35,9 @@ const Channel = () => {
         form.append('content', data.content)
         sendMessage(channelId, form)
     }
-    const handleFetchNextData = () => {
+    const handleFetchNextData = (fromStart) => {
         setLoading(true)
-        getMessage(channelId, {params: {limit: 20, beforeId: chat[chat.length - 1]?._id}})
+        getMessage(channelId, {params: {limit: 20, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined}})
         .then(res => {
             setLoading(false)
             if (res.status === 200) {
@@ -47,15 +47,19 @@ const Channel = () => {
     }
     // effect
     useEffect(() => {
-        socket?.on('client send message', msg => {
-            setChat(prev => [msg,...prev])
-        })
-        channelId && handleFetchNextData()
-        console.log(dm, dm.recipients?.find(item => item.user._id === selfId)?.seen)
+    },[])
+    useEffect(() => {
+        setChat([])
+        channelId && handleFetchNextData(true)
+        // console.log(dm, dm.recipients?.find(item => item.user._id === selfId)?.seen)
         channelId && !dm.recipients?.find(item => item.user._id === selfId)?.seen && seenChannel(channelId).then(res => res.status === 200 && dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === selfId ? {...rec, seen: true} : rec) } : item)}) )))
         socket?.emit('channel focus', channelId)
+        socket?.off('client send message')
+        socket?.on('client send message', msg => {
+            msg.channelId === channelId && setChat(prev => [msg,...prev])
+        })
+        
         return () => {
-            socket?.off('channel focus')
             socket?.emit('channel focus', null)
         }
     }, [channelId])
@@ -106,6 +110,7 @@ const ChatList = ({onSubmit, data, fetchNextData = () => true}) => {
                     }}
                     onScroll={handleScroll}
                     >
+                        <br/>
                         {
                             data.map((item, index) =>
                                 <div key={index}>
