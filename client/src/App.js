@@ -69,15 +69,15 @@ function App() {
     socket?.on('delete dm', dmId => {
       dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
     })
-    socket?.on('trigger notification', dm => {
+    socket?.on('update dm', dm => {
       dispatch(setProfile(prev => {
-        return {...prev, dms: [dm,...prev.dms.filter(item => item._id !== dm._id)]}
+        return {...prev, dms: prev.dms.map(item => item._id === dm._id ? dm : item)}
       }))
     })
-    socket?.on('seen channel', channelId => {
-      dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === id ? {...rec, seen: true} : rec) } : item)}) ))
+    // socket?.on('seen channel', channelId => {
+    //   dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === id ? {...rec, seen: true} : rec) } : item)}) ))
 
-    })
+    // })
   }, [id])
 
   if (!loading) return (

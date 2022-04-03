@@ -62,13 +62,13 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             // kiem tra xem ai dang focus, nguoi k focus se bi tao notify
             const currentFocusedUserIds = [...clients.filter(client => client.focusedChannel === req.params.channelId).map(i => i.userId), req.payloadFromJWT.id]
             doc.recipients = doc.recipients.map(item => ({...item._doc, status: 1, seen: currentFocusedUserIds.includes(item.user._id.toString()) ? true : false}))
-            const currentNotFocus = doc.recipients.filter(item => item.seen === false).map(i => i.user._id.toString())
+            // const currentNotFocus = doc.recipients.filter(item => item.seen === false).map(i => i.user._id.toString())
             await doc.save()
-            currentNotFocus.length && io.to(currentNotFocus).emit('trigger notification', doc)
+            io.to(req.params.channelId).emit('update dm', doc)
+            const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
+            io.to(req.params.channelId).emit('client send message', message)
+            res.status(200).send(message)
         }) 
-        const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
-        io.to(req.params.channelId).emit('client send message', message)
-        res.status(200).send(message)
     } catch (error) {
         console.log(error)
         res.status(500).send(error)
@@ -130,11 +130,11 @@ router.delete('/:channelId', verifyToken, async (req, res) => {
 // seen
 router.put('/:channelId/seen', verifyToken, async (req, res) => {
     try {
-        await DirectMessageModel.findById(req.params.channelId).then(async doc => {
+        await DirectMessageModel.findById(req.params.channelId).populate('recipients.user', userPrivateFields).then(async doc => {
             doc.recipients = doc.recipients.map(item => item._doc.user.toString() === req.payloadFromJWT.id ? {...item._doc, seen: true} : item)
             console.log(doc)
             await doc.save() 
-            io.to(req.payloadFromJWT.id).emit('seen channel', req.params.channelId)
+            io.to(req.payloadFromJWT.id).emit('update dm', doc)
             res.send()
         })
     } catch (error) {
