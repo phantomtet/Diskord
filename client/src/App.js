@@ -71,6 +71,7 @@ function App() {
     })
     socket?.on('update dm', dm => {
       dispatch(setProfile(prev => {
+        // return {...prev, dms: [dm,...prev.dms.filter(item => item._id !== dm._id)]}
         return {...prev, dms: prev.dms.map(item => item._id === dm._id ? dm : item)}
       }))
     })

@@ -18,6 +18,10 @@ const directMessageSchema = mongoose.Schema({
     isInbox: {
         type: Boolean,
         required: true
+    },
+    lastMessage: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Message'
     }
 })
 

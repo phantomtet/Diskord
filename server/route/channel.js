@@ -56,17 +56,19 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             content: req.body.content,
             author: mongoose.Types.ObjectId(req.payloadFromJWT.id),
             channelId: req.params.channelId,
-            createdAt: Date.now() 
+            createdAt: Date.now(),
         })
+        console.log('message', createMessage)
         DirectMessageModel.findOne({_id: req.params.channelId}).populate('recipients.user', userPrivateFields).exec(async (err, doc) => {
             // kiem tra xem ai dang focus, nguoi k focus se bi tao notify
+            doc.lastMessage = createMessage._id
             const currentFocusedUserIds = [...clients.filter(client => client.focusedChannel === req.params.channelId).map(i => i.userId), req.payloadFromJWT.id]
             doc.recipients = doc.recipients.map(item => ({...item._doc, status: 1, seen: currentFocusedUserIds.includes(item.user._id.toString()) ? true : false}))
             // const currentNotFocus = doc.recipients.filter(item => item.seen === false).map(i => i.user._id.toString())
             await doc.save()
-            io.to(req.params.channelId).emit('update dm', doc)
+            io.to(req.params.channelId).emit('update dm', doc)  // update dm cho tat ca ng trong channel
             const message = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
-            io.to(req.params.channelId).emit('client send message', message)
+            io.to(currentFocusedUserIds).emit('client send message', message)
             res.status(200).send(message)
         }) 
     } catch (error) {
@@ -132,9 +134,8 @@ router.put('/:channelId/seen', verifyToken, async (req, res) => {
     try {
         await DirectMessageModel.findById(req.params.channelId).populate('recipients.user', userPrivateFields).then(async doc => {
             doc.recipients = doc.recipients.map(item => item._doc.user.toString() === req.payloadFromJWT.id ? {...item._doc, seen: true} : item)
-            console.log(doc)
             await doc.save() 
-            io.to(req.payloadFromJWT.id).emit('update dm', doc)
+            io.to(req.payloadFromJWT.id).emit('update dm', doc)     // update dm cho ban than
             res.send()
         })
     } catch (error) {
