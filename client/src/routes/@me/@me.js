@@ -109,7 +109,7 @@ const IncomingRequestButton = ({active, onClick}) => {
 
     )
 }
-export const LeftBar =() => {
+export const LeftBar = React.memo(() => {
     // hook
 
     // redux state
@@ -138,20 +138,19 @@ export const LeftBar =() => {
                         <IconButton size='small'><AddIcon/></IconButton>
                     </div>
                     {
-                        dms?.map((item, index) =>
+                        [...dms]?.sort((a, b) => b.lastMessage?.createdAt - a.lastMessage?.createdAt).map((item, index) =>
                             <FriendButton
                             key={index}
                             data={item}
                             />
                         )
                     }
-
                 </div>
             </div>
             <MyStatus/>
         </div>
     )
-}
+})
 
 const FriendButton = ({data}) => {
     const selfId = useSelector(state => state.profile?._id)

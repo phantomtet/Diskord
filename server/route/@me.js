@@ -13,7 +13,7 @@ export const getUserProfile = async (id) => {
             UserModel.findById(mongoose.Types.ObjectId(id), {password: 0}).populate('relationship.user', userPrivateFields),
             DirectMessageModel.find({ 
                 recipients: { $elemMatch: { user: id, status: 1}}
-            }).populate('recipients.user', userPrivateFields)
+            }).populate('recipients.user', userPrivateFields).populate({ path: 'lastMessage', populate: { path: 'author', select: userPrivateFields }})
     
         ])
         return response = {

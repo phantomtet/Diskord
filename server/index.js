@@ -31,7 +31,7 @@ io.on('connection', async (socket) => {
     })
     // get all channel which the use is in
     const user = jwt.verify(socket.handshake.query.jwtToken, process.env.JWT_SECRET_KEY) 
-    const channels = await DirectMessageModel.find({'recipients.user': user.id}) 
+    const channels = await DirectMessageModel.find({'recipients.user': user.id})
     const profile = await getUserProfile(user.id)
     io.to(socket.id).emit('server send profile', profile)
     channels.forEach(channel => {
