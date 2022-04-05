@@ -79,52 +79,58 @@ const Channel = () => {
 const ChatList = ({onSubmit, data, fetchNextData = () => true}) => {
 
     const handleScroll = (e) => {
-        if (Math.abs(e.target.scrollTop) + e.target.offsetHeight >= e.target.scrollHeight) {
+        console.log(Math.abs(e.target.scrollTop), e.target.offsetHeight, e.target.scrollHeight )
+        if (Math.abs(e.target.scrollTop) + e.target.offsetHeight >= e.target.scrollHeight - 1) {
             console.log(data[data.length - 1])
             fetchNextData()
         }
     }
     return (
-        <React.Fragment>
+        <div style={{width: '100%', height: '100vh', display: 'flex', flexDirection: 'column'}}>
+            <div style={{height: 50, backgroundColor: '#36393F', borderBottom: '1px solid #2b2e33', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px'}}>
+                <div>
+                    {/* @ {} */}
+                </div>
+                <div>
 
-            <div className="flex fullwidth"
+                </div>
+            </div>
+            <div className="flex fullwidth "
             style={{
-                padding: '0 16px 20px 16px',
-                height: '100vh',
-                // width: '100%',
+                padding: '0 16px 0px 16px',
+                height: '100%',
+                overflow: 'auto',
                 backgroundColor: '#36393f',
-                // display: 'flex',
                 flexDirection: 'column-reverse'
             }}
+            onScroll={handleScroll}
             >
-                {/* <div flex='true' style={{flexDirection: 'column-reverse'}}> */}
-                    <MessageInput
-                    onSubmit={onSubmit}
-                    />
-                    <div
-                    style={{
-                        overflow: 'hidden scroll',
-                        marginBottom: 20,
-                        flexDirection: 'column-reverse',
-                        display: 'flex',
-                    }}
-                    onScroll={handleScroll}
-                    >
-                        <br/>
-                        {
-                            data.map((item, index) =>
-                                <div key={index}>
-                                    <SingleMessage
-                                    data={item}
-                                    />
-                                </div>
-                            )
-                        }
-                    </div>
-
+                {/* <div
+                style={{
+                    // overflow: 'hidden scroll',
+                    marginBottom: 20,
+                    flexDirection: 'column-reverse',
+                    display: 'flex',
+                }}
+            > */}
+                    <br/>
+                    {
+                        data.map((item, index) =>
+                        <div key={index}>
+                                <SingleMessage
+                                data={item}
+                                />
+                            </div>
+                        )
+                    }
                 {/* </div> */}
             </div>
-        </React.Fragment>
+            <div style={{backgroundColor: '#36393F', padding: '0 16px 20px 16px'}}>
+                <MessageInput
+                onSubmit={onSubmit}
+                />
+            </div>
+        </div>
     )
 }
 const HeaderBar = ({channelName}) => {
