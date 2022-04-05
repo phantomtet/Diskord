@@ -133,7 +133,7 @@ router.delete('/:channelId', verifyToken, async (req, res) => {
 router.put('/:channelId/seen', verifyToken, async (req, res) => {
     try {
         await DirectMessageModel.findById(req.params.channelId).populate('recipients.user', userPrivateFields).then(async doc => {
-            doc.recipients = doc.recipients.map(item => item._doc.user.toString() === req.payloadFromJWT.id ? {...item._doc, seen: true} : item)
+            doc.recipients = doc.recipients.map(item => item._doc.user._id.toString() === req.payloadFromJWT.id ? {...item._doc, seen: true} : item)
             await doc.save() 
             io.to(req.payloadFromJWT.id).emit('update dm', doc)     // update dm cho ban than
             res.send()
