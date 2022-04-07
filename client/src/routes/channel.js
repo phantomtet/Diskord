@@ -8,6 +8,7 @@ import { socket } from './../socket';
 import { useSelector, useDispatch } from 'react-redux';
 import { LeftBar } from "./@me/@me";
 import { setProfile } from "../store/profile";
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 const Channel = () => {
     // boiler plate
@@ -69,27 +70,43 @@ const Channel = () => {
             <LeftBar/>
             {/* <RightBar/> */}
             <ChatList
+            selfId={selfId}
             data={chat}
+            dmData={dm}
             onSubmit={handleSubmit}
             fetchNextData={() => !loading && handleFetchNextData()}
             />
         </div>
     )
 }
-const ChatList = ({onSubmit, data, fetchNextData = () => true}) => {
-
+const ChatList = ({onSubmit, data, dmData, selfId, fetchNextData = () => true}) => {
     const handleScroll = (e) => {
-        console.log(Math.abs(e.target.scrollTop), e.target.offsetHeight, e.target.scrollHeight )
+        // console.log(Math.abs(e.target.scrollTop), e.target.offsetHeight, e.target.scrollHeight )
         if (Math.abs(e.target.scrollTop) + e.target.offsetHeight >= e.target.scrollHeight - 1) {
-            console.log(data[data.length - 1])
+            // console.log(data[data.length - 1])
             fetchNextData()
         }
     }
     return (
         <div style={{width: '100%', height: '100vh', display: 'flex', flexDirection: 'column'}}>
-            <div style={{height: 50, backgroundColor: '#36393F', borderBottom: '1px solid #2b2e33', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px'}}>
+            <div style={{minHeight: 48, backgroundColor: '#36393F', borderBottom: '1px solid #2b2e33', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px'}}>
                 <div>
-                    {/* @ {} */}
+                    {
+                        !dmData?.isInbox ?
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <PeopleAltIcon style={{marginRight: 10}}/>
+                            <span style={{color: 'white'}}>
+                                {dmData?.recipients.filter(item => item.user?._id !== selfId).map(item => item.user.username).join(', ')}
+                            </span>
+                        </div>
+                        :
+                        <div>
+                            @ &nbsp;
+                            <span style={{color: 'white'}}>
+                                {dmData?.recipients.find(item => item.user?._id !== selfId)?.user?.username}
+                            </span>
+                        </div>
+                    }
                 </div>
                 <div>
 
@@ -105,25 +122,16 @@ const ChatList = ({onSubmit, data, fetchNextData = () => true}) => {
             }}
             onScroll={handleScroll}
             >
-                {/* <div
-                style={{
-                    // overflow: 'hidden scroll',
-                    marginBottom: 20,
-                    flexDirection: 'column-reverse',
-                    display: 'flex',
-                }}
-            > */}
-                    <br/>
-                    {
-                        data.map((item, index) =>
-                        <div key={index}>
-                                <SingleMessage
-                                data={item}
-                                />
-                            </div>
-                        )
-                    }
-                {/* </div> */}
+                <br/>
+                {
+                    data.map((item, index) =>
+                    <div key={index}>
+                            <SingleMessage
+                            data={item}
+                            />
+                        </div>
+                    )
+                }
             </div>
             <div style={{backgroundColor: '#36393F', padding: '0 16px 20px 16px'}}>
                 <MessageInput

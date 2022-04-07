@@ -114,7 +114,7 @@ export const LeftBar = React.memo(() => {
 
     // redux state
     const dms = useSelector(state => state.profile?.dms)
-    
+    const sortedDms = useMemo(() => dms && [...dms].sort((a, b) => b.lastMessage?.createdAt - a.lastMessage?.createdAt), [dms])
     // method
     return (
         <div className='leftbar' style={{backgroundColor: '#2f3136'}}>
@@ -138,7 +138,7 @@ export const LeftBar = React.memo(() => {
                         <IconButton size='small'><AddIcon/></IconButton>
                     </div>
                     {
-                        [...dms]?.sort((a, b) => b.lastMessage?.createdAt - a.lastMessage?.createdAt).map((item, index) =>
+                        sortedDms?.map((item, index) =>
                             <FriendButton
                             key={index}
                             data={item}
