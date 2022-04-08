@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { sendMessage, getMessage, seenChannel } from './../api/api';
 import Profile from '../components/common/Profile.component';
@@ -38,7 +38,7 @@ const Channel = () => {
     }
     const handleFetchNextData = (fromStart) => {
         setLoading(true)
-        getMessage(channelId, {params: {limit: 20, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined}})
+        getMessage(channelId, {params: {limit: 50, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined}})
         .then(res => {
             setLoading(false)
             if (res.status === 200) {
@@ -128,6 +128,7 @@ const ChatList = ({onSubmit, data, dmData, selfId, fetchNextData = () => true}) 
                     <div key={index}>
                             <SingleMessage
                             data={item}
+                            isSub={index !== data.length - 1 && data[index + 1].author.username === item.author.username}
                             />
                         </div>
                     )
@@ -162,40 +163,46 @@ const HeaderBar = ({channelName}) => {
 // }
 
 
-const SingleMessage = ({data}) => {
+const SingleMessage = ({data, isSub}) => {
     const [isHover, setIsHover] = useState()
+    useLayoutEffect(() => {
+        console.log(data)
+    }, [isHover])
     return (
         <div
+        // className="test"
         style={{
-            marginTop: 17,
-            display: 'flex',
+            marginBottom: 10,
         }}
-        onMouseEnter={() => setIsHover(true)}
-        onMouseLeave={() => setIsHover(false)}
         >
-            <div
-            style={{
-                minWidth: 48, minHeight: 48,
-                width: 48, height: 48,
-                backgroundColor: 'red',
-                borderRadius: '100%',
-                marginRight: 15
-            }}
-            />
-            <div 
-            style={{
-                width: '100%'
-            }}
+            <div style={{display: 'flex'}}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
             >
-                <div>
-                    <Profile id={data.author?._id}>
-                        {
-                            ({style,...props}) => <span {...props} style={{...style, color: 'white'}}>{data.author?.username}</span>
-                        }
-                    </Profile>
-                </div>
-                <div>
-                    <span style={{color: white1, wordBreak: 'break-word'}}>{data.content}</span>
+                <div
+                style={{
+                    // minWidth: 48, minHeight: 48,
+                    width: 48, height: isSub ? 0 : 48,
+                    backgroundColor: 'red',
+                    borderRadius: '100%',
+                    marginRight: 15
+                }}
+                />
+                <div 
+                style={{
+                    width: '100%'
+                }}
+                >
+                    <div hidden={isSub} style={{marginBottom: 10}}>
+                        <Profile id={data.author?._id}>
+                            {
+                                ({style,...props}) => <span {...props} style={{...style, color: 'white'}}>{data.author?.username}</span>
+                            }
+                        </Profile>
+                    </div>
+                    <div>
+                        <span style={{color: white1, wordBreak: 'break-word'}}>{data.content}</span>
+                    </div>
                 </div>
             </div>
         </div>
