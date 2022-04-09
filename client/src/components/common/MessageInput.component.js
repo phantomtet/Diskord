@@ -22,7 +22,7 @@ const MessageInput = ({onSubmit}) => {
         <div>
             {
                 isFileChosen &&
-                <div style={{ display: 'flex', padding: '20px 10px 10px 10px', backgroundColor: black, borderRadius: '10px 10px 0 0', margin: '0 1px', overflow: 'auto hidden'}}>
+                <div style={{ display: 'flex', padding: '20px 10px 10px 10px', backgroundColor: '#40444b', borderRadius: '10px 10px 0 0', margin: '0 1px', overflow: 'auto hidden'}}>
                     {
                         state.files.map((item, index) =>
                             <FilePreview
@@ -63,7 +63,7 @@ const MessageInput = ({onSubmit}) => {
         </div>
     )
 }
-export default MessageInput
+export default React.memo(MessageInput)
 
 const FilePreview = ({data, onClose}) => {
     const url = useMemo(() => {
@@ -73,7 +73,7 @@ const FilePreview = ({data, onClose}) => {
     return (
         <Paper 
         style={{
-            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: black1, color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px'
+            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: black1, color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px', backgroundColor: '#2f3136'
         }}>
             <img src={url} style={{maxWidth: '100%', height: '100%', objectFit: 'contain', margin: 'auto', borderRadius: '3px'}}/>
             <div style={{position: 'absolute', bottom: 0, left: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%'}}>{data.name}</div>

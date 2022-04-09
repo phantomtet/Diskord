@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
 import { sendMessage, getMessage, seenChannel } from './../api/api';
 import Profile from '../components/common/Profile.component';
@@ -21,11 +21,10 @@ const Channel = () => {
     const selfId = useSelector(state => state.profile?._id)
     const dm = useSelector(state => state.profile?.dms?.find(item => item._id === channelId))
     // state
-    const [guildData, setGuildData] = useState('loading')
     const [chat, setChat] = useState([])
     const [loading, setLoading] = useState(false)
     // methods
-    const handleSubmit = (data) => {
+    const handleSubmit = useCallback((data) => {
         socket.emit('client send message', {
             ...data,
 
@@ -36,8 +35,9 @@ const Channel = () => {
         })
         form.append('content', data.content)
         sendMessage(channelId, form)
-    }
-    const handleFetchNextData = (fromStart) => {
+    }, [channelId])
+    const handleFetchNextData = useCallback((fromStart) => {
+        if (loading) return
         setLoading(true)
         getMessage(channelId, {params: {limit: 50, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined}})
         .then(res => {
@@ -46,10 +46,8 @@ const Channel = () => {
                 setChat(prev => [...prev, ...res.data])
             }
         })
-    }
+    }, [channelId, chat, loading])
     // effect
-    useEffect(() => {
-    },[])
     useEffect(() => {
         setChat([])
         channelId && handleFetchNextData(true)
@@ -75,7 +73,7 @@ const Channel = () => {
             data={chat}
             dmData={dm}
             onSubmit={handleSubmit}
-            fetchNextData={() => !loading && handleFetchNextData()}
+            fetchNextData={handleFetchNextData}
             />
         </div>
     )
@@ -126,13 +124,12 @@ const ChatList = ({onSubmit, data, dmData, selfId, fetchNextData = () => true}) 
                 <br/>
                 {
                     data.map((item, index) =>
-                    <div key={index}>
-                            <SingleMessage
-                            data={item}
-                            isSub={index !== data.length - 1 && data[index + 1].author.username === item.author.username}
-                            isNewDay={index === data.length - 1 || moment(data[index + 1].createdAt).format('YYYY-MM-DD') !== moment(item.createdAt).format('YYYY-MM-DD')}
-                            />
-                        </div>
+                    <div key={item._id}>
+                        <SingleMessage
+                        nextData={data[index + 1]}
+                        data={item}
+                        />
+                    </div>
                     )
                 }
             </div>
@@ -165,11 +162,11 @@ const HeaderBar = ({channelName}) => {
 // }
 
 
-const SingleMessage = ({data, isSub, isNewDay}) => {
+const SingleMessage = React.memo( ({data, nextData}) => {
+    const isSub = nextData?.author.username === data.author.username
+    const isNewDay = !nextData || moment(nextData?.createdAt).format('YYYY-MM-DD') !== moment(data.createdAt).format('YYYY-MM-DD')
+
     const [isHover, setIsHover] = useState()
-    useLayoutEffect(() => {
-        console.log(data)
-    }, [isHover])
     return (
         <div
         // className="test"
@@ -227,4 +224,7 @@ const SingleMessage = ({data, isSub, isNewDay}) => {
         </div>
     )
 }
+// , (prev, next) => [next.prevData?._id, next.nextData?._id, next.data?._id].includes(prev.data._id)
+)
+
 export default Channel

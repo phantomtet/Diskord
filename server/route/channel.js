@@ -33,7 +33,7 @@ router.get('/:channelId/message', verifyToken, async (req, res) => {
 
     try {
         const messages = await MessageModel.find(query).limit(limit || 20).sort({createdAt: -1})
-        .populate('author', userPrivateFields)
+        .populate('author', userPrivateFields).populate('attachments')
         res.send(messages)
     } catch (error) {
         res.status(500).send(error)
@@ -58,7 +58,7 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 3), async 
             channelId: req.params.channelId,
             createdAt: Date.now(),
         })
-        const newMessage = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields)
+        const newMessage = await MessageModel.findById(createMessage._id).populate('author', userPrivateFields).populate('attachments')
         DirectMessageModel.findOne({_id: req.params.channelId}).populate('recipients.user', userPrivateFields).exec(async (err, doc) => {
             // kiem tra xem ai dang focus, nguoi k focus se bi tao notify
             doc.lastMessage = newMessage

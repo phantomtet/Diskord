@@ -3,7 +3,7 @@ import SignIn from './routes/signin';
 import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
 import Register from './routes/register';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dashboard from './routes/@me/@me';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
@@ -90,6 +90,7 @@ function App() {
         <Route exact path='/register' component={Register}/>
         <Route exact path='/channel/:channelId' component={Channel}/>
         <Route exact path='/@me' component={Dashboard}/>
+        <Route exact path='/test' component={Test}/>
       </div>
     </div>
   )
@@ -97,3 +98,40 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const Test = () => {
+  
+  const [array, setArray] = useState([1,2,3])
+  const them_phan_tu_vao_dau_array = () => {
+    setArray(prev => [Math.random(), ...prev])
+  }
+  const them_phan_tu_vao_dit_array = () => {
+    setArray(prev => [...prev, Math.random()])
+  }
+  return (
+    <div>
+      <button onClick={them_phan_tu_vao_dau_array}>Thêm phần tử vào đầu array</button>
+      <button onClick={them_phan_tu_vao_dit_array}>Thêm phần tử vào đít array</button>
+      {
+        array.map((item, index) =>
+          <El data={item}/>
+        )
+      }
+    </div>
+  )
+}
+const El = React.memo((props) => <div>{props.data}</div>)
