@@ -130,7 +130,7 @@ const ChatList = ({onSubmit, data, dmData, selfId, fetchNextData = () => true}) 
                             <SingleMessage
                             data={item}
                             isSub={index !== data.length - 1 && data[index + 1].author.username === item.author.username}
-                            isNewDay={index !== data.length - 1 && moment(data[index + 1].createdAt).format('YYYY-MM-DD') !== moment(item.createdAt).format('YYYY-MM-DD')}
+                            isNewDay={index === data.length - 1 || moment(data[index + 1].createdAt).format('YYYY-MM-DD') !== moment(item.createdAt).format('YYYY-MM-DD')}
                             />
                         </div>
                     )
