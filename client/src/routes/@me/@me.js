@@ -140,7 +140,7 @@ export const LeftBar = React.memo(() => {
                     {
                         sortedDms?.map((item, index) =>
                             <FriendButton
-                            key={index}
+                            key={item._id}
                             data={item}
                             />
                         )
@@ -152,7 +152,7 @@ export const LeftBar = React.memo(() => {
     )
 })
 
-const FriendButton = ({data}) => {
+const FriendButton = React.memo(({data}) => {
     const selfId = useSelector(state => state.profile?._id)
     const bool = Boolean(!data?.recipients?.find(item => item.user?._id === selfId)?.seen)
     const history = useHistory()
@@ -183,6 +183,6 @@ const FriendButton = ({data}) => {
         </div>
     )
 }
-
+)
 
 export default Dashboard
