@@ -40,7 +40,7 @@ const MessageInput = ({onSubmit}) => {
             maxRows={5}
             size='small'
             InputProps={{
-                startAdornment: <IconButton onClick={() => ref.current.click()} style={{marginRight: 10, backgroundColor: 'lightgray', width: 24, height: 24}}><AddIcon/></IconButton>,
+                startAdornment: <IconButton onClick={() => ref.current.click()} style={{marginRight: 10, backgroundColor: 'darkgray', width: 24, height: 24}}><AddIcon style={{fill: '#40444b'}}/></IconButton>,
                 style: { color: 'lightgray', backgroundColor: '#40444b', borderRadius: isFileChosen ? '0 0 10px 10px' : 10, maxHeight: '50vh',  overflow: 'auto'}
             }}
             value={state.content}

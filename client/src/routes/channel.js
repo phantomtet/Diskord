@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { LeftBar } from "./@me/@me";
 import { setProfile } from "../store/profile";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import moment from 'moment'
 
 const Channel = () => {
     // boiler plate
@@ -129,6 +130,7 @@ const ChatList = ({onSubmit, data, dmData, selfId, fetchNextData = () => true}) 
                             <SingleMessage
                             data={item}
                             isSub={index !== data.length - 1 && data[index + 1].author.username === item.author.username}
+                            isNewDay={index !== data.length - 1 && moment(data[index + 1].createdAt).format('YYYY-MM-DD') !== moment(item.createdAt).format('YYYY-MM-DD')}
                             />
                         </div>
                     )
@@ -163,7 +165,7 @@ const HeaderBar = ({channelName}) => {
 // }
 
 
-const SingleMessage = ({data, isSub}) => {
+const SingleMessage = ({data, isSub, isNewDay}) => {
     const [isHover, setIsHover] = useState()
     useLayoutEffect(() => {
         console.log(data)
@@ -173,32 +175,49 @@ const SingleMessage = ({data, isSub}) => {
         // className="test"
         style={{
             marginBottom: 10,
+            marginTop: Boolean(!isSub || isNewDay) && 10,
+            
         }}
         >
-            <div style={{display: 'flex'}}
+            <div hidden={!isNewDay} style={{position: 'relative', border: '1px solid #41454a', margin: '20px 0'}}>
+                <div style={{position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: -6, backgroundColor: '#36393f', padding: '0 5px', fontSize: 12}}>{moment(data?.createdAt).format('MMMM DD, YYYY')}</div>
+            </div>
+            <div style={{display: 'flex', backgroundColor: isHover && '#32353b',
+            padding: '3px', }}
             onMouseEnter={() => setIsHover(true)}
             onMouseLeave={() => setIsHover(false)}
             >
                 <div
                 style={{
-                    // minWidth: 48, minHeight: 48,
-                    width: 48, height: isSub ? 0 : 48,
-                    backgroundColor: 'red',
-                    borderRadius: '100%',
-                    marginRight: 15
+                    marginRight: 15,
+                    minWidth: 40
                 }}
-                />
+                >
+                    {
+                        Boolean(!isSub || isNewDay) ?
+                        <img
+                        style={{
+                            borderRadius: '100%',
+                            minWidth: 40, minHeight: Boolean(!isSub || isNewDay) && 40, maxHeight: Boolean(!isNewDay && isSub) && 0, maxWidth: 40,
+                            height: 40, width: '100%',                 
+                        }}
+                        src='https://cdn.iconscout.com/icon/free/png-256/discord-3691244-3073764.png'/>
+                        :
+                        <div style={{fontSize: 12, color: 'darkgray', textTransform: 'uppercase', maxWidth: 40, display: isHover ? 'flex' : 'none', justifyContent: 'center'}}>{moment(data?.createdAt).format('HH:mm')}</div>
+                    }
+                </div>
                 <div 
                 style={{
                     width: '100%'
                 }}
                 >
-                    <div hidden={isSub} style={{marginBottom: 10}}>
+                    <div hidden={Boolean(!isNewDay && isSub)} style={{marginBottom: 10}}>
                         <Profile id={data.author?._id}>
                             {
                                 ({style,...props}) => <span {...props} style={{...style, color: 'white'}}>{data.author?.username}</span>
                             }
                         </Profile>
+                        <span style={{marginLeft: 10, fontSize: 12, fontWeight: 'light'}}>{moment(data?.createdAt).format('MM/DD/YYYY')}</span>
                     </div>
                     <div>
                         <span style={{color: white1, wordBreak: 'break-word'}}>{data.content}</span>
