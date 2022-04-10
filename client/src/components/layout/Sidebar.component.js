@@ -19,7 +19,7 @@ const Sidebar = () => {
             backgroundColor: '#202225'
         }}
         >
-            Sidebar1
+            Sidebar11
             <Button onClick={() => history.push('/')}>/</Button>
             <Button onClick={() => history.push('/@me')}>me</Button>
             <Button onClick={handleLogout}>Log out</Button>
