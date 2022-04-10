@@ -38,19 +38,24 @@ router.get('/:channelId/message', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
-router.post('/:channelId/message', verifyToken, upload.array('files', 10), async (req, res) => {
-    req.files.forEach(file => {
-        const u = bucket.file(Date.now() + '__' + file.originalname)
-        file.url = u.publicUrl()
+router.post('/:channelId/message', verifyToken, upload.array('files', 5), async (req, res) => {
+    await Promise.all(req.files.map(file => {
+        const newName = Date.now() + '__' + file.originalname
+        const u = bucket.file(newName)
         const stream = u.createWriteStream()
-        stream.on('error', (err) => {
-            return res.status(500).send('Something wrong, ples try again later')
+        return new Promise((resolve, reject) => {
+            stream.on('error', (err) => {
+                reject(err)
+            })
+            stream.on('finish', async () => {
+                await u.makePublic()
+                file.url = u.publicUrl()
+                resolve()
+            })
+            stream.end(file.buffer)
         })
-        stream.on('finish', async () => {
-            await u.makePublic()
-        })
-        stream.end(file.buffer)
-    })
+    }))
+    console.log(req.files)
     try {
         // check if sender is in the channel
         const check = await DirectMessageModel.findById(req.params.channelId)

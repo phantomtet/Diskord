@@ -218,6 +218,14 @@ const SingleMessage = React.memo( ({data, nextData}) => {
                     </div>
                     <div>
                         <span style={{color: white1, wordBreak: 'break-word'}}>{data.content}</span>
+                        {/* file view */}
+                        <div>
+                            {
+                                data.attachments.map(file => 
+                                    <FileView data={file}/>
+                                )
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,5 +234,9 @@ const SingleMessage = React.memo( ({data, nextData}) => {
 }
 // , (prev, next) => [next.prevData?._id, next.nextData?._id, next.data?._id].includes(prev.data._id)
 )
-
+const FileView = ({data}) => {
+    return (
+        <img src={data.url}/>
+    )
+}
 export default Channel
