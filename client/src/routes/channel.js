@@ -10,7 +10,8 @@ import { LeftBar } from "./@me/@me";
 import { setProfile } from "../store/profile";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import moment from 'moment'
-
+import { getDownloadURL, ref, getStorage, getBlob } from 'firebase/storage'
+import app from "../secretFolder/firebase";
 const Channel = () => {
     // boiler plate
     const history = useHistory()
@@ -235,8 +236,15 @@ const SingleMessage = React.memo( ({data, nextData}) => {
 // , (prev, next) => [next.prevData?._id, next.nextData?._id, next.data?._id].includes(prev.data._id)
 )
 const FileView = ({data}) => {
+    const downloadFile = () => {
+        const storageRef = ref(getStorage(app), data.url)
+        getBlob(storageRef).then(url => console.log(url))
+    }
+    if (data.contentType.includes('image/')) return (
+        <img src={data.url} width='100%' style={{maxWidth: 800}}/>
+    )
     return (
-        <img src={data.url}/>
+        <div onClick={downloadFile}>{data.filename}</div>
     )
 }
 export default Channel

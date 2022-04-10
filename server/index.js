@@ -14,15 +14,7 @@ import jwt from 'jsonwebtoken';
 import admin from 'firebase-admin'
 
 dotenv.config()
-const firebaseConfig = {
-    apiKey: "AIzaSyCtaB2LwgD9LyIVCt-c04yjTFwnx_sMctQ",
-    authDomain: "diskord-166.firebaseapp.com",
-    projectId: "diskord-166",
-    storageBucket: "diskord-166.appspot.com",
-    messagingSenderId: "366426352372",
-    appId: "1:366426352372:web:1175d9e2a1172de0d5cca1",
-    measurementId: "G-92259DQW03"
-};
+
 export const firebaseApp = admin.initializeApp({
     credential: admin.credential.cert({
         "type": "service_account",
@@ -35,8 +27,7 @@ export const firebaseApp = admin.initializeApp({
         "token_uri": "https://oauth2.googleapis.com/token",
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-zzikv%40diskord-166.iam.gserviceaccount.com"
-      }
-      ),
+    }),
     storageBucket: "diskord-166.appspot.com"
 })
 export const bucket = admin.storage().bucket()
