@@ -16,6 +16,7 @@ const Sidebar = () => {
         <div
         style={{
             width: 72,
+            backgroundColor: '#202225'
         }}
         >
             Sidebar
