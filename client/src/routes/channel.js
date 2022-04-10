@@ -238,13 +238,27 @@ const SingleMessage = React.memo( ({data, nextData}) => {
 const FileView = ({data}) => {
     const downloadFile = () => {
         const storageRef = ref(getStorage(app), data.url)
-        getBlob(storageRef).then(url => console.log(url))
+        getBlob(storageRef).then(blob => {
+            console.log(blob)
+            var url = window.URL.createObjectURL(blob)
+            var el = document.createElement('a')
+            el.setAttribute('href', url)
+            el.setAttribute('download', data.filename)
+            el.click()
+            el.remove()
+        })
+        
+        
     }
     if (data.contentType.includes('image/')) return (
         <img src={data.url} width='100%' style={{maxWidth: 800}}/>
     )
     return (
-        <div onClick={downloadFile}>{data.filename}</div>
+        <div >
+            <span className="canclick" onClick={downloadFile}>
+                {data.filename}
+            </span>
+        </div>
     )
 }
 export default Channel
