@@ -2,8 +2,7 @@ import express from 'express'
 import verifyToken from './../middleware/authorization.js';
 import { UserModel, userPrivateFields } from './../model/user.js';
 import { MessageModel } from './../model/message.js';
-import { ChannelModel } from './../model/channel.js';
-import { clients, io } from './../index.js';
+import { clients, io, bucket } from './../index.js';
 import mongoose from 'mongoose';
 import multer from 'multer';
 import FileModel from './../model/file.js';
@@ -19,7 +18,7 @@ const fileEngine = multer.diskStorage({
         cb(null, Date.now() + '__' + file.originalname)
     }
 })
-export const upload = multer({ storage: fileEngine })
+export const upload = multer({ storage: multer.memoryStorage() })
 
 router.get('/:channelId/message', verifyToken, async (req, res) => {
     const { limit, beforeId } = req.query
@@ -39,17 +38,27 @@ router.get('/:channelId/message', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
-router.post('/:channelId/message', verifyToken, upload.array('files', 3), async (req, res) => {
+router.post('/:channelId/message', verifyToken, upload.array('files', 10), async (req, res) => {
+    req.files.forEach(file => {
+        const u = bucket.file(Date.now() + '__' + file.originalname)
+        file.url = u.publicUrl()
+        const stream = u.createWriteStream()
+        stream.on('error', (err) => {
+            return res.status(500).send('Something wrong, ples try again later')
+        })
+        stream.on('finish', async () => {
+            await u.makePublic()
+        })
+        stream.end(file.buffer)
+    })
     try {
         // check if sender is in the channel
         const check = await DirectMessageModel.findById(req.params.channelId)
         if (!check.recipients.map(item => item.user.toString()).includes(req.payloadFromJWT.id)) return res.status(400).send({ message: 'You are not in this channel'}) 
         const uploadFile = await FileModel.insertMany(req.files.map(file => ({
-            filename: file.filename,
-            content: {
-                data: file.filename,
-                contentType: file.mimetype
-            }
+            filename: file.originalname,
+            contentType: file.mimetype,
+            url: file.url
         })))
         const createMessage = await MessageModel.create({
             attachments: uploadFile.map(item => mongoose.Types.ObjectId(item._id)),

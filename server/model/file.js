@@ -5,9 +5,13 @@ const fileSchema = mongoose.Schema({
         required: true,
         type: String
     },
-    content: {
-        data: Buffer,
-        contentType: String
+    contentType: {
+        required: true,
+        type: String
+    },
+    url: {
+        required: true,
+        type: String
     }
 })
 
