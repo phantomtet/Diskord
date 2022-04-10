@@ -15,13 +15,16 @@ dotenv.config()
 
 
 const app = express()
+// middleware
+app.use(express.json())
+app.use(cors())
 mongoose.connect(process.env.CONNECTION_URL)
 
 export var clients = []
 const server = createServer(app)
 export const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000'
+        origin: '*'
     }
 })
 io.on('connection', async (socket) => {
@@ -55,9 +58,6 @@ io.on('connection', async (socket) => {
     })
     console.log(clients)
 })
-// middleware
-app.use(express.json())
-app.use(cors())
 
 
 // router
