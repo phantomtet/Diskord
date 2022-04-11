@@ -1,4 +1,4 @@
-import { Switch, Route, useHistory, useParams } from 'react-router-dom'
+import { Route, useHistory } from 'react-router-dom'
 import SignIn from './routes/signin';
 import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import Dashboard from './routes/@me/@me';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
-import { createDM, getMe } from './api/api';
 import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
@@ -30,13 +29,7 @@ function App() {
     }
     if (!id) {
       setLoading(true)
-      // getMe().then(res => {
-      //   if (res.status === 200) {
-          createConnection(localStorage.getItem('diskordToken'))
-      //     dispatch(initializeProfile(res.data))
-      //     setLoading(false)
-      //   }
-      // })
+      createConnection(localStorage.getItem('diskordToken'))
       return
     }
   }, [id])
@@ -86,7 +79,8 @@ function App() {
         <Route exact path='/register' component={Register}/>
         <Route exact path='/channel/:channelId' component={Channel}/>
         <Route exact path='/test' component={Test}/>
-        <Route path='/' component={Dashboard}/>
+        <Route exact path='/' component={Dashboard}/>
+        <Route exact path='/@me' component={Dashboard}/>
       </div>
     </div>
   )

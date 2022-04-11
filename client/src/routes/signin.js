@@ -57,7 +57,7 @@ const SignIn = () => {
                 justifyContent: 'space-between',
                 borderRadius: 4,
                 padding: 32,
-                backgroundColor: grey,
+                backgroundColor: '#36393f',
             }}
             sx={{
                 height: {
@@ -80,15 +80,16 @@ const SignIn = () => {
                         <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Welcome back!</div>
                         <div style={{fontSize: 16, color: white1}}>We're so excited to see you again!</div>
                     </div>
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
-                        EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic', color: '#eb8385'}}>{emailError}</span>
                     </div>
                     <TextField
                     autoComplete='new-password'
                     color={emailError ? 'error' : ''}
                     inputProps={{
                         style: {
-                            color: white,
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
                         }
                     }}
                     size='small'
@@ -96,12 +97,19 @@ const SignIn = () => {
                     value={input.email}
                     onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
-                        PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic', color: '#eb8385'}}>{emailError}</span>
                     </div>
 
                     <TextField
                     size='small'
+                    inputProps={{
+                        style: {
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
+                        }
+                    }}
+
                     fullWidth
                     type='password'
                     value={input.password}
