@@ -63,7 +63,8 @@ router.post('/:channelId/message', verifyToken, upload.array('files', 5), async 
         const uploadFile = await FileModel.insertMany(req.files.map(file => ({
             filename: file.originalname,
             contentType: file.mimetype,
-            url: file.url
+            url: file.url,
+            size: file.size
         })))
         const createMessage = await MessageModel.create({
             attachments: uploadFile.map(item => mongoose.Types.ObjectId(item._id)),

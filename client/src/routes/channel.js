@@ -12,6 +12,10 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import moment from 'moment'
 import { getDownloadURL, ref, getStorage, getBlob } from 'firebase/storage'
 import app from "../secretFolder/firebase";
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DownloadIcon from '@mui/icons-material/Download';
+import { toFileSize } from "../misc/libService";
+
 const Channel = () => {
     // boiler plate
     const history = useHistory()
@@ -170,11 +174,9 @@ const SingleMessage = React.memo( ({data, nextData}) => {
     const [isHover, setIsHover] = useState()
     return (
         <div
-        // className="test"
         style={{
             marginBottom: 10,
             marginTop: Boolean(!isSub || isNewDay) && 10,
-            
         }}
         >
             <div hidden={!isNewDay} style={{position: 'relative', border: '1px solid #41454a', margin: '20px 0'}}>
@@ -254,10 +256,17 @@ const FileView = ({data}) => {
         <img src={data.url} width='100%' style={{maxWidth: 800}}/>
     )
     return (
-        <div >
-            <span className="canclick" onClick={downloadFile}>
-                {data.filename}
-            </span>
+        <div style={{display: 'flex'}}>
+            <div style={{ backgroundColor: '#2f3136', borderColor: '#292b2f', padding: '15px 10px', alignItems: 'center', display: 'flex', borderRadius: 6,}} >
+                <InsertDriveFileIcon style={{fontSize: 40, marginRight: 10, width: 40}}/>
+                <div style={{display: 'flex', flexDirection: 'column', }}>
+                    <div className="canclick threedottext" onClick={downloadFile} style={{color: '#18afe8', maxWidth: '30vw'}}>
+                        {data.filename}
+                    </div>
+                    <div style={{color: '#72767D', fontSize: 12}}>{toFileSize(data.size)}</div>
+                </div>
+                <DownloadIcon onClick={downloadFile} className="canclick"/>
+            </div>
         </div>
     )
 }
