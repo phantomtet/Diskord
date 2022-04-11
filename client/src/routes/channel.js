@@ -225,7 +225,7 @@ const SingleMessage = React.memo( ({data, nextData}) => {
                         <div>
                             {
                                 data.attachments.map(file => 
-                                    <FileView data={file}/>
+                                    <FileView key={file._id} data={file}/>
                                 )
                             }
                         </div>

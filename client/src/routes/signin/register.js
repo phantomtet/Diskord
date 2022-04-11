@@ -146,8 +146,8 @@ const Register = () => {
                     onClick={handleSubmit}
                     response={handleResponse}
                     />
-                    <div align='left' className='hover underlined' style={{marginTop: 10, fontSize: 14}}>
-                        Already have an account?
+                    <div align='left' style={{marginTop: 10, fontSize: 14}}>
+                        <span onClick={() => history.push('/signin')} className='hover underlined'>Already have an account?</span>
                     </div>
                     <div align='left' style={{marginTop: 20, fontSize: 11}}>
                         By registering, you agree to Diskord's <span className='hover underlined'>Terms of Service</span>
