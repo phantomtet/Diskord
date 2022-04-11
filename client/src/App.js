@@ -1,8 +1,8 @@
 import { Route, useHistory } from 'react-router-dom'
-import SignIn from './routes/signin';
+import SignIn from './routes/signin/signin';
 import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
-import Register from './routes/register';
+import Register from './routes/signin/register';
 import React, { useEffect, useState } from 'react';
 import Dashboard from './routes/@me/@me';
 import './App.css'

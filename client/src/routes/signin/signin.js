@@ -1,24 +1,32 @@
 import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { register, signIn } from '../api/api';
-import { white1, grey, white } from '../misc/config';
-import { red } from './../misc/config';
+import { signIn } from '../../api/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
-const Register = () => {
+const SignIn = () => {
+    // hook
+    const dispatch = useDispatch()
+    const history = useHistory()
+    // state
+    const id = useSelector(state => state.profile?._id)
     const [input, setInput] = useState({
         email: '',
-        username: '',
         password: '',
-        date_of_birth: '',
     })
     const [emailError, setEmailError] = useState(null)
 
     const handleSubmit = () => {
-        return register(input)
+        return signIn(input)
     }
     const handleResponse = (res) => {
+        // alert(localStorage.getItem('diskordToken'))
         if (res.success) {
+            // dispatch(initializeProfile(res.data))
             localStorage.setItem('diskordToken', res.token)
+            window.location.assign('/@me')
+            // createConnection(res.data._id)
+            // history.push('/@me')
         }
         else {
             setEmailError(res.message)
@@ -29,7 +37,9 @@ const Register = () => {
     useEffect(() => {
         setEmailError(null)
     }, [input])
-    
+    useEffect(() => {
+        if (id) history.push('/@me')
+    }, [id])
     return (
         <div
         align='center'
@@ -46,7 +56,7 @@ const Register = () => {
                 justifyContent: 'space-between',
                 borderRadius: 4,
                 padding: 32,
-                backgroundColor: grey,
+                backgroundColor: '#36393f',
             }}
             sx={{
                 height: {
@@ -67,17 +77,18 @@ const Register = () => {
                 >
                     <div>
                         <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Welcome back!</div>
-                        <div style={{fontSize: 16, color: white1}}>We're so excited to see you again!</div>
+                        <div style={{fontSize: 16, color: 'lightgray'}}>We're so excited to see you again!</div>
                     </div>
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
-                        EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic', color: '#eb8385'}}>{emailError}</span>
                     </div>
                     <TextField
                     autoComplete='new-password'
                     color={emailError ? 'error' : ''}
                     inputProps={{
                         style: {
-                            color: white,
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
                         }
                     }}
                     size='small'
@@ -85,12 +96,19 @@ const Register = () => {
                     value={input.email}
                     onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
-                        PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic', color: '#eb8385'}}>{emailError}</span>
                     </div>
 
                     <TextField
                     size='small'
+                    inputProps={{
+                        style: {
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
+                        }
+                    }}
+
                     fullWidth
                     type='password'
                     value={input.password}
@@ -103,7 +121,7 @@ const Register = () => {
                     }}>
                         <span className='hover underlined'>Forgot password?</span>
                     </div>
-                    <SubmitButton
+                    <LoginButton
                     onClick={handleSubmit}
                     response={handleResponse}
                     />
@@ -126,7 +144,7 @@ const Register = () => {
     )
 }
 
-const SubmitButton = ({onClick, response}) => {
+const LoginButton = ({onClick, response}) => {
     const [loading, setLoading] = useState(false)
     const handleClick = () => {
         setLoading(true)
@@ -152,4 +170,4 @@ const SubmitButton = ({onClick, response}) => {
     )
 }
 
-export default Register
+export default SignIn
