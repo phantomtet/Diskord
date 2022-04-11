@@ -1,15 +1,18 @@
 import { Box, Button, TextField } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { register } from '../../api/api';
 
 const Register = () => {
+    const history = useHistory()
+    const id = useSelector(state => state.profile?._id)
     const [input, setInput] = useState({
         email: '',
         username: '',
         password: '',
         date_of_birth: '',
     })
-    const [a,setA] = useState('11')
     const [emailError, setEmailError] = useState(null)
 
     const handleSubmit = () => {
@@ -28,7 +31,10 @@ const Register = () => {
     useEffect(() => {
         setEmailError(null)
     }, [input])
-    
+    useEffect(() => {
+        if (id) history.push('/@me')
+    }, [id])
+
     return (
         <div
         align='center'
