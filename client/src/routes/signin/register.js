@@ -142,6 +142,7 @@ const Register = () => {
                     onChange={e => setInput(prev => ({...prev, date_of_birth: e.target.value}))}
                     />
                     <SubmitButton
+                    disabled={!Object.keys(input).every(key => input[key])}
                     onClick={handleSubmit}
                     response={handleResponse}
                     />
@@ -157,7 +158,7 @@ const Register = () => {
     )
 }
 
-const SubmitButton = ({onClick, response}) => {
+const SubmitButton = ({onClick, response, disabled}) => {
     const [loading, setLoading] = useState(false)
     const handleClick = () => {
         setLoading(true)
@@ -169,12 +170,12 @@ const SubmitButton = ({onClick, response}) => {
     return (
         <Button 
         onClick={handleClick}
-        disabled={loading}
+        disabled={disabled || loading}
         variant='contained' 
         color='primary' 
         fullWidth 
         style={{height: 44, fontWeight: 600, textTransform: 'none', marginTop: 20}}>
-            { loading ? <div className='dot-flashing'/> : 'Login'}
+            { loading ? <div className='dot-flashing'/> : 'Register'}
         </Button>
     )
 }
