@@ -61,7 +61,7 @@ const SignIn = () => {
             sx={{
                 height: {
                     xs: '100%',
-                    sm: '344px',
+                    sm: 'auto',
                 },
                 width: {
                     xs: '100%',
@@ -118,6 +118,7 @@ const SignIn = () => {
                     align='left'
                     style={{
                         padding: '4px 0 20px',
+                        fontSize: 14
                     }}>
                         <span className='hover underlined'>Forgot password?</span>
                     </div>
@@ -125,6 +126,9 @@ const SignIn = () => {
                     onClick={handleSubmit}
                     response={handleResponse}
                     />
+                    <div style={{marginTop: 10, color: '#72767D', fontSize: 14}} align='left'>
+                        Need an account? <span className='hover underlined' onClick={() => history.push('/register')}>Register here</span>
+                    </div>
                 </div>
                 <Box
                 className='QRCode'
