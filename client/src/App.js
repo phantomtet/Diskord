@@ -4,13 +4,14 @@ import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
 import Register from './routes/signin/register';
 import React, { useEffect, useState } from 'react';
-import Dashboard from './routes/@me/@me';
+import Dashboard from './routes/@me/Dashboard';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
 import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
 import PrivateRoute from './misc/PrivateRoute';
+import { updateUserInfo } from './api/api';
 
 function App() {
   // hook
@@ -105,24 +106,14 @@ export default App;
 
 
 const Test = () => {
-  
-  const [array, setArray] = useState([1,2,3])
-  const them_phan_tu_vao_dau_array = () => {
-    setArray(prev => [Math.random(), ...prev])
-  }
-  const them_phan_tu_vao_dit_array = () => {
-    setArray(prev => [...prev, Math.random()])
+  const handleChange = e => {
+    const form = new FormData()
+    form.append('avatar', e.target.files[0])
+    updateUserInfo(form)
   }
   return (
-    <div>
-      <button onClick={them_phan_tu_vao_dau_array}>Thêm phần tử vào đầu array</button>
-      <button onClick={them_phan_tu_vao_dit_array}>Thêm phần tử vào đít array</button>
-      {
-        array.map((item, index) =>
-          <El data={item}/>
-        )
-      }
+    <div style={{backgroundColor: 'black', height: '100vh'}}>
+      <input type='file' onChange={handleChange}/>
     </div>
   )
 }
-const El = React.memo((props) => <div>{props.data}</div>)

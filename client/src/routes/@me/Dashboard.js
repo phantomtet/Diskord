@@ -16,7 +16,7 @@ import FriendList from './FriendList/FriendList';
 import IncomingRequestList from './IncomingFriendRequestList/IncomingRequestList';
 import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
 import AddFriendContainer from './AddFriend/AddFriendContainer';
-import { deleteDM } from './../../api/api';
+import { deleteDM } from '../../api/api';
 
 const Dashboard = () => {
     // state

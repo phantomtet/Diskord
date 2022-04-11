@@ -6,7 +6,7 @@ import MessageInput from './../components/common/MessageInput.component';
 import { white1, grey } from "../misc/config";
 import { socket } from './../socket';
 import { useSelector, useDispatch } from 'react-redux';
-import { LeftBar } from "./@me/@me";
+import { LeftBar } from "./@me/Dashboard";
 import { setProfile } from "../store/profile";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import moment from 'moment'

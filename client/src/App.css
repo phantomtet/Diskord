@@ -170,3 +170,6 @@ code {
 .canclick2:hover {
   box-shadow: inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1);
 }
+.activated {
+  box-shadow: inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1);
+}

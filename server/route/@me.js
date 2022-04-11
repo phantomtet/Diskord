@@ -3,7 +3,8 @@ import verifyToken from "../middleware/authorization.js";
 import { UserModel, ProfileModel, userPrivateFields } from './../model/user.js';
 import { DirectMessageModel } from './../model/DM.js';
 import mongoose from "mongoose";
-import { io, clients } from '../index.js'
+import { io, clients, bucket } from '../index.js'
+import { upload } from "./channel.js";
 const router = express.Router()
 
 export const getUserProfile = async (id) => {
@@ -122,6 +123,7 @@ router.delete('/relationship/:targetid', verifyToken, async (req, res) => {     
     } catch (error) {
         res.status(400).send({ message: 'You are blocked or user is not existed'})}
 })
+// create inbox
 router.post('/channel', verifyToken, async (req, res) => {
     const { recipients } = req.body
     try {
@@ -136,7 +138,18 @@ router.post('/channel', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
-
+// updateUserInfo
+router.patch('/', upload.single('avatar'), verifyToken, async (req, res) => {
+    console.log(req.file)
+    // const u = bucket.file('testfile')
+    // let url = u.publicUrl()
+    // const stream = u.createWriteStream({
+    //     contentType: 'image/jpeg'
+    // })
+    // stream.on('error', err => console.log(err))
+    // stream.end(req.body.avatar)
+    // res.send(url)
+})
 
 
 
