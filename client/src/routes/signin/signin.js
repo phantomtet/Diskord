@@ -20,8 +20,8 @@ const SignIn = () => {
         return signIn(input)
     }
     const handleResponse = (res) => {
-        if (res.success) {
-            localStorage.setItem('diskordToken', res.token)
+        if (res.status === 200) {
+            localStorage.setItem('diskordToken', res.data.token)
             window.location.assign('/@me')
         }
         else {
@@ -148,14 +148,10 @@ const LoginButton = ({onClick, response}) => {
     const [loading, setLoading] = useState(false)
     const handleClick = () => {
         setLoading(true)
-        try {
-            onClick().then(res => {
-                setLoading(false)
-                response(res.data)
-            })
-        } catch (error) {
-            console.error(error)
-        }
+        onClick().then(res => {
+            setLoading(false)
+            response(res)
+        })
     }
     return (
         <Button 

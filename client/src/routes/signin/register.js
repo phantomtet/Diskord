@@ -19,8 +19,9 @@ const Register = () => {
         return register(input)
     }
     const handleResponse = (res) => {
-        if (res.success) {
-            localStorage.setItem('diskordToken', res.token)
+        if (res.status === 200) {
+            localStorage.setItem('diskordToken', res.data.token)
+            window.location.assign('/@me')
         }
         else {
             setEmailError(res.message)
@@ -60,8 +61,7 @@ const Register = () => {
                 },
                 width: {
                     xs: '100%',
-                    sm: '414px',
-                    md: '720px'
+                    sm: 'auto',
                 },
             }}
             >
@@ -75,7 +75,7 @@ const Register = () => {
                     </div>
                     {/* email input */}
                     <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
-                        EMAIL <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                        EMAIL <span style={{fontWeight: 450, fontStyle: 'italic', color: '#eb8385'}}>{emailError}</span>
                     </div>
                     <TextField
                     autoComplete='new-password'
@@ -92,8 +92,8 @@ const Register = () => {
                     onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
                     {/* login name input */}
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
-                        LOGIN NAME <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, fontWeight: 600}}>
+                        LOGIN NAME
                     </div>
                     <TextField
                     autoComplete='new-password'
@@ -109,8 +109,8 @@ const Register = () => {
                     onChange={e => setInput(prev => ({...prev, username: e.target.value}))}
                     />
                     {/* password input */}
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
-                        PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, fontWeight: 600}}>
+                        PASSWORD
                     </div>
                     <TextField
                     size='small'
@@ -126,7 +126,7 @@ const Register = () => {
                     onChange={e => setInput(prev => ({...prev, password: e.target.value}))}
                     />
                     {/* Birthday input */}
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, fontWeight: 600}}>
                         BIRTHDAY
                     </div>
                     <TextField
@@ -152,19 +152,6 @@ const Register = () => {
                         By registering, you agree to Diskord's <span className='hover underlined'>Terms of Service</span>
                     </div>
                 </div>
-                <Box
-                className='QRCode'
-                sx={{
-                    width: '240px',
-                    display: {
-                        xs: 'none',
-                        sm: 'none',
-                        md: 'block'
-                    }
-                }}
-                >
-                    
-                </Box>
             </Box>
         </div>
     )
@@ -174,14 +161,10 @@ const SubmitButton = ({onClick, response}) => {
     const [loading, setLoading] = useState(false)
     const handleClick = () => {
         setLoading(true)
-        try {
-            onClick().then(res => {
-                setLoading(false)
-                response(res.data)
-            })
-        } catch (error) {
-            console.error(error)
-        }
+        onClick().then(res => {
+            setLoading(false)
+            response(res)
+        })
     }
     return (
         <Button 
