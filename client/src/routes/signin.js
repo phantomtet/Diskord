@@ -3,9 +3,8 @@ import { useEffect, useState } from 'react'
 import { white1, grey, red, white } from '../misc/config';
 import { signIn } from '../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeProfile } from '../store/profile';
 import { useHistory } from 'react-router-dom';
-import { createConnection } from '../socket';
+
 const SignIn = () => {
     // hook
     const dispatch = useDispatch()

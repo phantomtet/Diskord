@@ -5,7 +5,9 @@
   color: lightgray;
   user-select: none;
 }
-
+img {
+  -webkit-user-drag: none;
+}
 body {
   font-family: Whitney,"Helvetica Neue",Helvetica,Arial,sans-serif;
 
@@ -45,6 +47,9 @@ code {
 }
 .underlined:hover {
   text-decoration: underline;
+}
+.pressing:active {
+  transform: translateY(1px);
 }
 .dot-flashing {
   position: relative;

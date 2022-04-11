@@ -75,10 +75,6 @@ function App() {
         return {...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)]}
       }))
     })
-    // socket?.on('seen channel', channelId => {
-    //   dispatch(setProfile(prev => ({...prev, dms: prev.dms.map(item => item._id === channelId ? {...item, recipients: item.recipients.map(rec => rec.user._id === id ? {...rec, seen: true} : rec) } : item)}) ))
-
-    // })
   }, [id])
 
   if (!loading) return (
@@ -89,8 +85,8 @@ function App() {
         <Route exact path='/signin' component={SignIn}/>
         <Route exact path='/register' component={Register}/>
         <Route exact path='/channel/:channelId' component={Channel}/>
-        <Route exact path='/@me' component={Dashboard}/>
         <Route exact path='/test' component={Test}/>
+        <Route path='/' component={Dashboard}/>
       </div>
     </div>
   )
