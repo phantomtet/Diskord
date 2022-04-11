@@ -5,10 +5,9 @@ import { useHistory } from 'react-router-dom';
 import { initializeProfile } from '../../store/profile';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-const Sidebar = () => {
+const Sidebar = ({open}) => {
     const dispatch = useDispatch()
     const history = useHistory()
-    const profile = useSelector(state => state.profile)
 
     const handleLogout = () => {
         localStorage.setItem('diskordToken', null)
@@ -17,10 +16,10 @@ const Sidebar = () => {
     return (
         <div
         style={{
-            width: profile ? 72 : 0,
+            width: 72,
             backgroundColor: '#202225',
             paddingTop: 12,
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            display: open ? 'flex' : 'none', flexDirection: 'column', justifyContent: 'space-between',
             transition: 'all 0.5s'
         }}
         >

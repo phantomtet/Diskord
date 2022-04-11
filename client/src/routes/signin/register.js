@@ -1,8 +1,6 @@
 import { Box, Button, TextField } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { register, signIn } from '../../api/api';
-import { white1, grey, white } from '../../misc/config';
-import { red } from '../../misc/config';
+import React, { useEffect, useState } from 'react'
+import { register } from '../../api/api';
 
 const Register = () => {
     const [input, setInput] = useState({
@@ -11,6 +9,7 @@ const Register = () => {
         password: '',
         date_of_birth: '',
     })
+    const [a,setA] = useState('11')
     const [emailError, setEmailError] = useState(null)
 
     const handleSubmit = () => {
@@ -46,12 +45,12 @@ const Register = () => {
                 justifyContent: 'space-between',
                 borderRadius: 4,
                 padding: 32,
-                backgroundColor: grey,
+                backgroundColor: '#36393f',
             }}
             sx={{
                 height: {
                     xs: '100%',
-                    sm: '344px',
+                    sm: 'auto',
                 },
                 width: {
                     xs: '100%',
@@ -66,18 +65,19 @@ const Register = () => {
                 }}
                 >
                     <div>
-                        <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Welcome back!</div>
-                        <div style={{fontSize: 16, color: white1}}>We're so excited to see you again!</div>
+                        <div style={{padding: '0 0 8px', fontSize: 24, color: 'white', fontWeight: 600}}>Create account</div>
                     </div>
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
-                        EMAIL OR PHONE NUMBER <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    {/* email input */}
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        EMAIL <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
                     <TextField
                     autoComplete='new-password'
                     color={emailError ? 'error' : ''}
                     inputProps={{
                         style: {
-                            color: white,
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
                         }
                     }}
                     size='small'
@@ -85,28 +85,66 @@ const Register = () => {
                     value={input.email}
                     onChange={e => setInput(prev => ({...prev, email: e.target.value}))}
                     />
-                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? white1 : red, fontWeight: 600}}>
+                    {/* login name input */}
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        LOGIN NAME <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
+                    </div>
+                    <TextField
+                    autoComplete='new-password'
+                    inputProps={{
+                        style: {
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
+                        }
+                    }}
+                    size='small'
+                    fullWidth
+                    value={input.username}
+                    onChange={e => setInput(prev => ({...prev, username: e.target.value}))}
+                    />
+                    {/* password input */}
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
                         PASSWORD <span style={{fontWeight: 450, fontStyle: 'italic'}}>{emailError}</span>
                     </div>
-
                     <TextField
                     size='small'
+                    inputProps={{
+                        style: {
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
+                        }
+                    }}
                     fullWidth
                     type='password'
                     value={input.password}
                     onChange={e => setInput(prev => ({...prev, password: e.target.value}))}
                     />
-                    <div            
-                    align='left'
-                    style={{
-                        padding: '4px 0 20px',
-                    }}>
-                        <span className='hover underlined'>Forgot password?</span>
+                    {/* Birthday input */}
+                    <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, color: !emailError ? 'lightgray' : '#eb8385', fontWeight: 600}}>
+                        BIRTHDAY
                     </div>
+                    <TextField
+                    size='small' type='date'
+                    inputProps={{
+                        style: {
+                            color: 'lightgray',
+                            backgroundColor: '#202225'
+                        }
+                    }}
+                    fullWidth
+                    value={input.date_of_birth}
+                    onChange={e => setInput(prev => ({...prev, date_of_birth: e.target.value}))}
+                    />
                     <SubmitButton
                     onClick={handleSubmit}
                     response={handleResponse}
                     />
+                    <div align='left' className='hover underlined' style={{marginTop: 10, fontSize: 14}}>
+                        Already have an account?
+                    </div>
+                    <div align='left' style={{marginTop: 20, fontSize: 11}}>
+                        By registering, you agree to Diskord's <span className='hover underlined'>Terms of Service</span>
+                    </div>
                 </div>
                 <Box
                 className='QRCode'
@@ -146,10 +184,9 @@ const SubmitButton = ({onClick, response}) => {
         variant='contained' 
         color='primary' 
         fullWidth 
-        style={{height: 44, fontWeight: 600, textTransform: 'none'}}>
+        style={{height: 44, fontWeight: 600, textTransform: 'none', marginTop: 20}}>
             { loading ? <div className='dot-flashing'/> : 'Login'}
         </Button>
     )
 }
-
 export default Register

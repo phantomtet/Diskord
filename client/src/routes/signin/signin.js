@@ -2,7 +2,7 @@ import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { signIn } from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 const SignIn = () => {
     // hook
@@ -20,13 +20,9 @@ const SignIn = () => {
         return signIn(input)
     }
     const handleResponse = (res) => {
-        // alert(localStorage.getItem('diskordToken'))
         if (res.success) {
-            // dispatch(initializeProfile(res.data))
             localStorage.setItem('diskordToken', res.token)
             window.location.assign('/@me')
-            // createConnection(res.data._id)
-            // history.push('/@me')
         }
         else {
             setEmailError(res.message)

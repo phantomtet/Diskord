@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
+import PrivateRoute from './misc/PrivateRoute';
 
 function App() {
   // hook
@@ -23,7 +24,7 @@ function App() {
   useEffect(() => {
     if (!localStorage.getItem('diskordToken')) {
       setLoading(false)
-      history.push('/signin')
+      // history.push('/signin')
       disconnectConnection()
       return
     }
@@ -73,14 +74,14 @@ function App() {
   if (!loading) return (
     <div className='fullwidth flex'>
       {/* <button>click</button> */}
-      <Sidebar/>
+      <Sidebar open={Boolean(id)}/>
       <div className='fullwidth'>
         <Route exact path='/signin' component={SignIn}/>
         <Route exact path='/register' component={Register}/>
-        <Route exact path='/channel/:channelId' component={Channel}/>
         <Route exact path='/test' component={Test}/>
-        <Route exact path='/' component={Dashboard}/>
-        <Route exact path='/@me' component={Dashboard}/>
+        <PrivateRoute isAuth={Boolean(id)} exact path='/channel/:channelId' children={<Channel/>}/>
+        <PrivateRoute isAuth={Boolean(id)} exact path='/' children={<Dashboard/>}/>
+        <PrivateRoute isAuth={Boolean(id)} exact path='/@me' children={<Dashboard/>}/>
       </div>
     </div>
   )
