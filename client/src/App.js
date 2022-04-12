@@ -11,7 +11,7 @@ import { initializeProfile, setProfile } from './store/profile';
 import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
 import PrivateRoute from './misc/PrivateRoute';
-import { updateUserInfo } from './api/api';
+import { updateAvatar } from './api/api';
 
 function App() {
   // hook
@@ -109,7 +109,7 @@ const Test = () => {
   const handleChange = e => {
     const form = new FormData()
     form.append('avatar', e.target.files[0])
-    updateUserInfo(form)
+    updateAvatar(form)
   }
   return (
     <div style={{backgroundColor: 'black', height: '100vh'}}>

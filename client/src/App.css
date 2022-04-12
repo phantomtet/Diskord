@@ -7,6 +7,7 @@
 }
 img {
   -webkit-user-drag: none;
+  object-fit: cover;
 }
 body {
   font-family: Whitney,"Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -168,8 +169,12 @@ code {
   transition: background-color 0.05s, box-shadow 0.25s;
 }
 .canclick2:hover {
-  box-shadow: inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1);
+  box-shadow: inset 0px 0px 100px 100px rgba(161, 161, 161, 0.1);
 }
 .activated {
-  box-shadow: inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1);
+  color: white;
+  box-shadow: inset 0px 0px 100px 100px rgba(161, 161, 161, 0.1);
+}
+.d {
+  box-shadow: inset 0px 0px 100px 100px rgba(0, 0, 0, 0.1);
 }

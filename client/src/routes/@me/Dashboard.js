@@ -164,9 +164,9 @@ const FriendButton = React.memo(({data}) => {
         })
     }
     return (
-        <div className='canclick2' ref={ref} style={{backgroundColor: black, borderLeft: bool ? '5px solid red': '5px solid #2f3136', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex', boxShadow: channelId === data._id ? 'inset 0px 0px 100px 100px rgba(104, 103, 103, 0.1)' : 'none'}}>
+        <div className={`canclick ${channelId === data._id && 'activated'}`} ref={ref} style={{backgroundColor: black, borderLeft: bool ? '5px solid red': '5px solid #2f3136', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex'}}>
             <div onClick={() => history.push(`/channel/${data._id}`)} style={{alignItems: 'center', height: 42, display: 'flex', width: '100%', }}>
-                <img className='avatar-32' style={{margin: '0 10px'}}/>
+                <img className='avatar-32' style={{margin: '0 10px'}} src={data?.isInbox && data?.recipients.find(item => item.user?._id !== selfId)?.user.avatar || '/discord_icon.ico'}/>
                 <div style={{textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden', width: '140px'}}>
                     {
                         !data?.isInbox ?

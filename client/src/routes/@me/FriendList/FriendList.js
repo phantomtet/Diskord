@@ -77,7 +77,7 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
         <React.Fragment>
             <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>
                 <div style={{display: 'flex', width: '100%'}}>
-                    <img className='avatar-32' style={{margin: '0 10px'}}/>
+                    <img className='avatar-32' style={{margin: '0 10px'}} src={data?.avatar || '/discord_icon.ico'}/>
                     <div>
                         <div style={{color: '#FFFFFF', fontWeight: 'bold', fontSize: 15, marginBottom: 3}}>{data?.username}</div>
                         <div style={{color: 'B9BBBE', fontSize: 13}}>Online</div>   

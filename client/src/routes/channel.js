@@ -201,7 +201,7 @@ const SingleMessage = React.memo( ({data, nextData}) => {
                             minWidth: 40, minHeight: Boolean(!isSub || isNewDay) && 40, maxHeight: Boolean(!isNewDay && isSub) && 0, maxWidth: 40,
                             height: 40, width: '100%',                 
                         }}
-                        src='https://cdn.iconscout.com/icon/free/png-256/discord-3691244-3073764.png'/>
+                        src={data.author?.avatar || '/discord_icon.ico'}/>
                         :
                         <div style={{fontSize: 12, color: 'darkgray', textTransform: 'uppercase', maxWidth: 40, display: isHover ? 'flex' : 'none', justifyContent: 'center'}}>{moment(data?.createdAt).format('HH:mm')}</div>
                     }

@@ -11,7 +11,7 @@ const MyStatus = () => {
     const [settingOpen, setSettingOpen] = useState(false)
     return (
         <div style={{display: 'flex', alignItems: 'center', height: 52, padding: '8px', fontSize: 13, backgroundColor: '#292b2f'}}>
-            <img className='avatar-32 canclick' style={{marginRight: 8}}/>
+            <img className='avatar-32 canclick' style={{marginRight: 8}} src={profile?.avatar || '/discord_icon.ico'}/>
             <div>
                 <div className='threedottext' style={{color: 'white', fontWeight: 'bold', width: 85 }}>{profile?.username}</div>
                 <div>#1234</div>

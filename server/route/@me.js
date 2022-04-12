@@ -138,17 +138,31 @@ router.post('/channel', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
-// updateUserInfo
-router.patch('/', upload.single('avatar'), verifyToken, async (req, res) => {
+// update user avatar
+router.patch('/avatar', verifyToken, upload.single('avatar'), async (req, res) => {
     console.log(req.file)
-    // const u = bucket.file('testfile')
-    // let url = u.publicUrl()
-    // const stream = u.createWriteStream({
-    //     contentType: 'image/jpeg'
-    // })
-    // stream.on('error', err => console.log(err))
-    // stream.end(req.body.avatar)
-    // res.send(url)
+    let url = ''
+    if (!req.file.mimetype.includes('image/')) return res.status(400).send({ message: 'Invalid type file' })
+    try {
+    const name = Date.now() + '__' + req.file.originalname
+    const u = bucket.file(name)
+    const stream = u.createWriteStream()
+    stream.on('error', err => {
+        return res.status(500).send(err)
+    })
+    stream.on('finish', async () => {
+        await u.makePublic()
+        url = u.publicUrl()
+        await UserModel.findById(req.payloadFromJWT.id).exec((error, doc) => {
+            doc.avatar = url
+            doc.save()
+        })
+        res.send({url: url})
+    })
+    stream.end(req.file.buffer)
+    } catch (error) {
+        res.status(500).send(error)
+    }
 })
 
 
