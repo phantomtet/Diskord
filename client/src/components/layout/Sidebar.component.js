@@ -10,7 +10,7 @@ const Sidebar = ({open}) => {
     const history = useHistory()
 
     const handleLogout = () => {
-        localStorage.setItem('diskordToken', null)
+        localStorage.removeItem('diskordToken')
         dispatch(initializeProfile(null))
     }
     return (

@@ -19,7 +19,7 @@ export const getUserProfile = async (id) => {
         ])
         return response = {
             ...values[0]._doc,
-            dms: values[1] // chi tra ve user khac voi ban than
+            dms: values[1]
         }
     } catch (error) {
         return error
@@ -141,7 +141,35 @@ router.post('/channel', verifyToken, async (req, res) => {
 // update user info
 router.patch('/', verifyToken, async (req, res) => {
     try {
-        
+        await UserModel.findById(req.payloadFromJWT.id).exec(async (error, doc) => {
+            if (error) return res.status(500).send(error)
+            const userPassword = doc.password
+            const checkUsername = async () => {
+                if (!req.body.username) return 1
+                if (req.body.password !== userPassword) {
+                    res.status(400).send({message: { message: 'Wrong password!', code: 'Password error' }})
+                    return 0
+                }
+                await UserModel.findOne({ username: req.body.username}).then(value => {
+                    if (value && value._id.toString() !== req.payloadFromJWT.id) {
+                        res.status(400).send({ message: { message: 'This username has been already taken', code: 'Username error'}})
+                        return 0
+                    }
+                    doc.username = req.body.username
+                    return 1
+                })
+            }
+            const check = await checkUsername()
+            if (check === 0) return // kiem tra xem da co loi hay chua, neu co roi thi k can chay nua
+            if (req.body.newPassword && userPassword === req.body.password) doc.password = req.body.newPassword
+            await doc.save()
+            Object.keys(userPrivateFields).forEach(key => {
+                doc[key] = undefined
+            })
+            const selfSocketId = clients.find(item => item.userId === req.payloadFromJWT.id)?.socketId
+            if (selfSocketId) io.to(Array.from(io.of('/').adapter.sids.get(selfSocketId))).emit('profile change', doc)
+            return res.send()
+        })
     } catch (error) {
         res.status(500).send(error)
     }
@@ -161,11 +189,16 @@ router.patch('/avatar', verifyToken, upload.single('avatar'), async (req, res) =
     stream.on('finish', async () => {
         await u.makePublic()
         url = u.publicUrl()
-        await UserModel.findById(req.payloadFromJWT.id).exec((error, doc) => {
+        await UserModel.findById(req.payloadFromJWT.id).exec( async (error, doc) => {
             doc.avatar = url
-            doc.save()
+            await doc.save()
+            Object.keys(userPrivateFields).forEach(key => {
+                doc[key] = undefined
+            })
+            const selfSocketId = clients.find(item => item.userId === req.payloadFromJWT.id)?.socketId
+            if (selfSocketId) io.to(Array.from(io.of('/').adapter.sids.get(selfSocketId))).emit('profile change', doc)
         })
-        res.send({url: url})
+        res.send()
     })
     stream.end(req.file.buffer)
     } catch (error) {

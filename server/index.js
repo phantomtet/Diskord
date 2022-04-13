@@ -53,9 +53,13 @@ io.on('connection', async (socket) => {
     const user = jwt.verify(socket.handshake.query.jwtToken, process.env.JWT_SECRET_KEY) 
     const channels = await DirectMessageModel.find({'recipients.user': user.id})
     const profile = await getUserProfile(user.id)
+    console.log(profile)
     io.to(socket.id).emit('server send profile', profile)
     channels.forEach(channel => {
         socket.join(channel._id.toString())
+    })
+    profile.relationship.forEach(item => {
+        socket.join(item.user._id.toString())
     })
     clients.push({
         socketId: socket.id,

@@ -1,10 +1,11 @@
-import { Button, Dialog, IconButton } from "@mui/material"
-import React, { useMemo, useRef, useState } from "react"
+import { Button, ButtonGroup, Dialog, IconButton, TextField } from "@mui/material"
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import CloseIcon from '@mui/icons-material/Close';
 import { useDispatch, useSelector } from "react-redux";
 import useHover from "../../hooks/useHover";
-import { updateAvatar } from "../../api/api";
+import { updateAvatar, updateUserInfo } from "../../api/api";
 import { setProfile } from "../../store/profile";
+import Loading from "../../components/common/ButtonWithLoading.component";
 
 const sidebarConfig = {
     'USER SETTINGS': ['My Account', 'User Profile', 'Privacy & Safety', 'Authorized Apps', 'Connections'],
@@ -54,6 +55,8 @@ export default UserSettingDialog
 const MyAccount = () => {
     const [hover, ref] = useHover()
     const profile = useSelector(state => state.profile)
+    const [updateDialog, setUpdateDialog] = useState(null)
+    const handleCloseDialog = useCallback(() => setUpdateDialog(null), [])
     return (
         <div style={{width: '100%'}}>
             <div style={{fontSize: 18, fontWeight: 'bold', color: 'white', marginBottom: 20}}>My Account</div>
@@ -75,7 +78,7 @@ const MyAccount = () => {
                                 <div><span style={{fontSize: 14, color: 'white'}}>{profile?.username}</span><span style={{fontSize: 14}}>#1234</span></div>
                             </div>
                             <div>
-                                <Button style={{backgroundColor: '#4F545C', color: 'white', textTransform: 'capitalize'}}>Edit</Button>
+                                <Button onClick={() => setUpdateDialog(0)} style={{backgroundColor: '#4F545C', color: 'white', textTransform: 'capitalize'}}>Edit</Button>
                             </div>
                         </div>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 20}}>
@@ -84,7 +87,7 @@ const MyAccount = () => {
                                 <div><span style={{fontSize: 14, color: 'white'}}>{profile?.email}</span></div>
                             </div>
                             <div>
-                                <Button style={{backgroundColor: '#4F545C', color: 'white', textTransform: 'capitalize'}}>Edit</Button>
+                                <Button  onClick={() => setUpdateDialog(1)} style={{backgroundColor: '#4F545C', color: 'white', textTransform: 'capitalize'}}>Edit</Button>
                             </div>
                         </div>
                     </div>
@@ -95,9 +98,64 @@ const MyAccount = () => {
                 <div style={{color: 'white', fontWeight: 'bold', fontSize: 18, marginBottom: 20}}>Password and Authentication</div>
                 <Button style={{color: 'white', backgroundColor: '#5865f2', textTransform: 'capitalize', padding: '5px 15px'}}>Change Password</Button>
             </div>
+            <UpdateUsernameDialog initialName={profile?.username} open={updateDialog === 0} onClose={handleCloseDialog}/>
         </div>
     )
 }
+const UpdateUsernameDialog = React.memo(({initialName, open, onClose}) => {
+    const [input, setInput] = useState({
+        username: '',
+        password: '',
+    })
+    const [serverMessage, setServerMessage] = useState()
+    const api = () => updateUserInfo(input)
+    const handleResponse = res => {
+        if (res.status !== 200) {
+            setServerMessage(res.message)
+        }
+        else onClose()
+    }
+    useEffect(() => {
+        if (!open) return setInput({
+            username: '',
+            password: '',
+        })
+        setInput(prev => ({...prev, username: initialName || ''}))
+    }, [open])
+    useEffect(() => {
+        setServerMessage()
+    }, [input])
+    return (
+        <Dialog open={open} onClose={onClose} >
+            <div align='center' style={{backgroundColor: '#36393f', width: 440, padding: '24px 16px 16px 16px'}}>
+                <div style={{fontWeight: 'bolder', color: 'white', fontSize: 23, marginBottom: 10}}>Change your username</div>
+                <div style={{ color: '#B9BBBE', fontSize: 15, marginBottom: 24}}>Enter a new username and your existing password</div>
+                <div align='left' style={{fontSize: 12, fontWeight: 'bold', marginBottom: 10}}>USERNAME {serverMessage?.code === 'Username error' && <span style={{color: '#F38688'}}>{serverMessage?.message}</span>}</div>
+                <TextField style={{marginBottom: 15}} inputProps={{ style: {backgroundColor: '#202225', color: 'lightgray'} }} fullWidth size='small'
+                value={input.username}
+                error={serverMessage?.code === 'Username error'}
+                onChange={e => setInput(prev => ({...prev, username: e.target.value}))}
+                />
+                <div align='left' style={{fontSize: 12, fontWeight: 'bold', marginBottom: 10}}>CURRENT PASSWORD {serverMessage?.code === 'Password error' && <span style={{color: '#F38688'}}>{serverMessage?.message}</span>}</div>
+                <TextField type='password' inputProps={{ style: {backgroundColor: '#202225', color: 'lightgray'} }} fullWidth size='small'
+                value={input.password}
+                error={serverMessage?.code === 'Password error'}
+                onChange={e => setInput(prev => ({...prev, password: e.target.value}))}
+                />
+            </div>
+            {/* actions */}
+            <div align='right' style={{ backgroundColor: '#2F3136', height: 70, padding: 16}}>
+                <Button style={{color: 'white', padding: '6px 32px', textTransform: 'capitalize'}}>Cancel</Button>
+                <Loading promise={api} response={handleResponse}>
+                    {
+                        (loading, callAPI) => <Button disabled={loading} onClick={callAPI} style={{backgroundColor: '#5865F2', color: 'white', padding: '6px 32px', textTransform: 'capitalize'}}>Done</Button>
+                    }
+                </Loading>
+                
+            </div>
+        </Dialog>
+    )
+})
 const Avatar = ({src}) => {
     const dispatch = useDispatch()
     const [hover, ref] = useHover(null)

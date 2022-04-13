@@ -70,6 +70,16 @@ function App() {
         return {...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)]}
       }))
     })
+    socket?.on('profile change', profile => {
+      dispatch(setProfile(prev => {
+        if (profile._id === prev._id) prev = {...prev, ...profile}
+        return ({
+          ...prev,
+          relationship: prev.relationship.map(item => item.user._id === profile._id ? {...item, user: profile} : item), 
+          dms: prev.dms.map(dm => ( {...dm, recipients: dm.recipients.map(item => item.user._id === profile._id ? {...item, user: profile} : item)} ))
+        })
+      }))
+    })
   }, [id])
 
   if (!loading) return (
