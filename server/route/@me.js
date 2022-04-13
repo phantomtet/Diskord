@@ -138,6 +138,14 @@ router.post('/channel', verifyToken, async (req, res) => {
         res.status(500).send(error)
     }
 })
+// update user info
+router.patch('/', verifyToken, async (req, res) => {
+    try {
+        
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 // update user avatar
 router.patch('/avatar', verifyToken, upload.single('avatar'), async (req, res) => {
     console.log(req.file)

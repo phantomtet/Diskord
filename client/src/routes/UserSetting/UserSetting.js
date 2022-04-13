@@ -28,7 +28,7 @@ const UserSettingDialog = ({open, onClose}) => {
                                 <div style={{padding: '6px 10px', fontSize: 14, fontWeight: 600}}>{key}</div>
                                 {
                                     sidebarConfig[key].map(item =>
-                                        <div onClick={() => setActiveState(item)} className={`${activeState === item ? 'activated': 'canclick2'}`} style={{ width: 192, padding: '6px 10px', borderRadius: 5, marginBottom: 2, fontSize: 15}}>{item}</div>
+                                        <div key={item} onClick={() => setActiveState(item)} className={`${activeState === item ? 'activated': 'canclick2'}`} style={{ width: 192, padding: '6px 10px', borderRadius: 5, marginBottom: 2, fontSize: 15}}>{item}</div>
                                     )
                                 }
                                 <hr color='#373a3f' style={{margin: '8px 10px'}}/>

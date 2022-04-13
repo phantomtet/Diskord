@@ -42,14 +42,14 @@ const Profile = ({children, id}) => {
                             style={{
                                 borderRadius: '10px 10px 0 0',
                                 height: 60,
-                                backgroundColor: profileData.bannerColor,
+                                backgroundColor: profileData.bannerColor || 'gray',
                                 position: 'relative'
                             }}
                             >
-                                <div
+                                <img
                                 style={{
                                     position: 'absolute',
-                                    backgroundColor: 'red',
+                                    backgroundColor: '#18191c',
                                     height: 80,
                                     width: 80,
                                     borderRadius: '100%',
@@ -57,20 +57,21 @@ const Profile = ({children, id}) => {
                                     left: 20,
                                     border: '5px solid #18191c'
                                 }}
+                                src={profileData.avatar || '/discord_icon.ico'}
                                 />
                             </div>
                             <div
                             style={{
                                 padding: '55px 20px 20px 20px',
                                 borderRadius: '0 0 10px 10px',
-                                backgroundColor: black1,
+                                backgroundColor: '#18191c',
                             }}
                             >
                                 <div style={{fontSize: 20, fontWeight: "bolder", color: "white", marginBottom: 20}}>
                                     {profileData.username}
                                     <span style={{ color: white1}}>&nbsp;#1234</span>
                                 </div>
-                                <Divider sx={{backgroundColor: black1}}/>
+                                <Divider sx={{backgroundColor: '#33353b'}}/>
                                 {
                                     profileData.bio &&
                                     <div name='bio' style={{padding: '10px 0', color: white1, fontSize: 12}}>

@@ -159,9 +159,7 @@ const FriendButton = React.memo(({data}) => {
     const { channelId } = useParams()
     const [hover, ref] = useHover()
     const handleDeleteDM = () => {
-        deleteDM(data._id).then(res => {
-            if (res.status === 200) history.push('/@me')
-        })
+        deleteDM(data._id)
     }
     return (
         <div className={`canclick ${channelId === data._id && 'activated'}`} ref={ref} style={{backgroundColor: black, borderLeft: bool ? '5px solid red': '5px solid #2f3136', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex'}}>
