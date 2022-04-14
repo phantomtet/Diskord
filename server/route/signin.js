@@ -5,14 +5,18 @@ import { userPrivateFields } from './../model/user.js';
 const router = express.Router()
 
 router.post('/', async (req, res) => {
+    if (!req.body.email || !req.body.password) return res.status(400).send({message: 'Invalid email or password'})
     try {
         const user = await UserModel.findOne({ email: req.body.email, password: req.body.password}).select({ password: 0}).populate('relationship.user', userPrivateFields)
-        res.send({
+        if (user) res.send({
             success: user ? true : false,
             data: user,
-            message: user ? 'Get user successfully' : 'Invalid email or password',
+            message: 'Get user successfully',
             token: user && jwt.sign({id: user._id}, process.env.JWT_SECRET_KEY)
         })
+        else {
+            res.status(400).send({message: 'Invalid email or password'})
+        }
     } 
     catch (error) {
         res.send(error)
