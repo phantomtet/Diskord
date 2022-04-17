@@ -68,14 +68,14 @@ const MyAccount = () => {
                     <div style={{display: 'flex', alignItems: 'center', top: -20, marginBottom: 15 }}>
                         <Avatar src={profile?.avatar}/>
                         <div>
-                            <span style={{fontSize: 20, color: 'white', fontWeight: 'bold'}}>{profile?.username}</span><span style={{fontSize: 19, fontWeight: 'bold'}}>#1234</span>
+                            <span style={{fontSize: 20, color: 'white', fontWeight: 'bold'}}>{profile?.username}</span><span style={{fontSize: 19, fontWeight: 'bold'}}>#{profile?.tag}</span>
                         </div>
                     </div>
                     <div style={{borderRadius: 8, padding: '20px 20px 0 20px', backgroundColor: '#2F3136'}}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 20}}>
                             <div>
                                 <div style={{fontSize: 12, marginBottom: 8}}>USERNAME</div>
-                                <div><span style={{fontSize: 14, color: 'white'}}>{profile?.username}</span><span style={{fontSize: 14}}>#1234</span></div>
+                                <div><span style={{fontSize: 14, color: 'white'}}>{profile?.username}</span><span style={{fontSize: 14}}>#{profile?.tag}</span></div>
                             </div>
                             <div>
                                 <Button onClick={() => setUpdateDialog(0)} style={{backgroundColor: '#4F545C', color: 'white', textTransform: 'capitalize'}}>Edit</Button>
@@ -145,7 +145,7 @@ const UpdateUsernameDialog = React.memo(({initialName, open, onClose}) => {
             </div>
             {/* actions */}
             <div align='right' style={{ backgroundColor: '#2F3136', height: 70, padding: 16}}>
-                <Button style={{color: 'white', padding: '6px 32px', textTransform: 'capitalize'}}>Cancel</Button>
+                <Button onClick={onClose} style={{color: 'white', padding: '6px 32px', textTransform: 'capitalize'}}>Cancel</Button>
                 <Loading promise={api} response={handleResponse}>
                     {
                         (loading, callAPI) => <Button disabled={loading} onClick={callAPI} style={{backgroundColor: '#5865F2', color: 'white', padding: '6px 32px', textTransform: 'capitalize'}}>Done</Button>

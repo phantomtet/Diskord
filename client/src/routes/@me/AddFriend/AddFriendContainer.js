@@ -1,27 +1,29 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { useDispatch } from 'react-redux';
-import { addRelationship } from '../../../store/profile';
+import React, { useState, useMemo } from 'react'
 import { TextField, Button } from '@mui/material';
-import { socket } from './../../../socket';
 import { sendFriendRequestTo } from '../../../api/api';
 
 const AddFriendContainer = () => {
     // hook
-    const dispatch = useDispatch()
     const initialResponse = useMemo(() => ({ status: null, message: ''}), [])
-
     // statet
     const [search, setSearch] = useState('')
+    const isCorrectFormat = search.split('#').length === 2 && search.split('#').every(element => element !== '')
     const [response, setResponse] = useState({...initialResponse})
 
     // method
     const handleChange = e => {
+        // cant write more than 1 '#' character
+        let count = 0
+        e.target.value.split('').forEach(key => {
+            if (key === '#' || (count === 1 && isNaN(key))) count ++
+        })
+        if (count > 1) return
         setSearch(e.target.value)
         setResponse(initialResponse)
     }
     const handleSearch = () => {
-        if (!search) return
-        sendFriendRequestTo(search).then((res) => {
+        if (!isCorrectFormat) return
+        sendFriendRequestTo({username: search.split('#')[0], tag: parseInt(search.split('#')[1])}).then((res) => {
             setResponse({
                 status: res.status,
                 message: res.message
@@ -33,14 +35,14 @@ const AddFriendContainer = () => {
         <div style={{padding: '15px 20px 20px 30px', width: '100%'}}>
             <h4 style={{margin: '10px 0', color: 'white'}}>ADD FRIEND</h4>
             <div style={{color: '#B9BBBE', fontSize: 14}}>You can add a friend with their Diskord tag. It's cAsE sEnSiTiVe!</div>
-            <TextField placeholder='Search'size='small' fullWidth autoComplete='new-password'
+            <TextField placeholder='Username#0000' size='small' fullWidth autoComplete='new-password'
             style={{margin: '20px 0 10px 0'}}
             value={search}
             onChange={handleChange}
             InputProps={{
                 endAdornment: 
-                    <Button size='small' className='test'
-                    style={{backgroundColor: '#5865F2', color: 'white', textTransform: 'capitalize', fontWeight: 'bold', margin: '10px 0', cursor: search ? 'pointer' : 'not-allowed', width: 200}}
+                    <Button size='small' className='test' variant='contained'
+                    style={{backgroundColor: '#5865F2', color: 'white', opacity: isCorrectFormat ? 1 : 0.5, textTransform: 'capitalize', fontWeight: 'bold', margin: '10px 0', cursor: isCorrectFormat ? 'pointer' : 'not-allowed', width: 200}}
                     onClick={handleSearch} 
                     >
                         Send Friend Request

@@ -93,7 +93,7 @@ const Register = () => {
                     />
                     {/* login name input */}
                     <div align='left' style={{ margin: '20px 0 10px', fontSize: 12, fontWeight: 600}}>
-                        LOGIN NAME
+                        USER NAME ( i.e: Taylor Sweet)
                     </div>
                     <TextField
                     autoComplete='new-password'

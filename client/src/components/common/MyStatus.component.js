@@ -14,7 +14,7 @@ const MyStatus = () => {
             <img className='avatar-32 canclick' style={{marginRight: 8}} src={profile?.avatar || '/discord_icon.ico'}/>
             <div>
                 <div className='threedottext' style={{color: 'white', fontWeight: 'bold', width: 85 }}>{profile?.username}</div>
-                <div>#1234</div>
+                <div>#{profile?.tag}</div>
             </div>
             <div style={{display: 'flex'}}>
                 <IconButton size='small'>

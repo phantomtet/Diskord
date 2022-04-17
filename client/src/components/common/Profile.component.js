@@ -69,7 +69,7 @@ const Profile = ({children, id}) => {
                             >
                                 <div style={{fontSize: 20, fontWeight: "bolder", color: "white", marginBottom: 20}}>
                                     {profileData.username}
-                                    <span style={{ color: white1}}>&nbsp;#1234</span>
+                                    <span style={{ color: white1}}>&nbsp;#{profileData.tag}</span>
                                 </div>
                                 <Divider sx={{backgroundColor: '#33353b'}}/>
                                 {

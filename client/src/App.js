@@ -39,19 +39,22 @@ function App() {
     if (!id) {
       socket?.removeAllListeners()
       socket?.on('server send profile', profile => {
-        dispatch(initializeProfile(profile))
+        if (!profile) {
+          localStorage.removeItem('diskordToken')
+        }
+        else dispatch(initializeProfile(profile))
         setLoading(false)
       })
       return
     }
     socket?.off('server send profle')
-    socket?.on('request sent', (user) => {
+    socket?.on('add relationship', (user) => {
       dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
     })
-    socket?.on('request received', (user) => {
-      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
-    })
-    socket?.on('request accepted', (user) => {
+    // socket?.on('request received', (user) => {
+    //   dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+    // })
+    socket?.on('update relationship', (user) => {
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item)})))
     })
     socket?.on('remove relationship', userId => {

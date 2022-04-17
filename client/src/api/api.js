@@ -46,7 +46,7 @@ export const sendMessage = (id, ...config) => HTTP.post(`/channel/${id}/message`
 export const getMessage = (id, config) => HTTP.get(`/channel/${id}/message`, config)
 export const getUser = (id) => HTTP.get(`/user/${id}`)
 export const getMe = () => HTTP.get('/@me')
-export const sendFriendRequestTo = (id, ...config) => HTTP.put(`/@me/relationship/${id}`, ...config)
+export const sendFriendRequestTo = (...config) => HTTP.put(`/@me/relationship`, ...config)
 export const deleteRelationship = (id) => HTTP.delete(`/@me/relationship/${id}`)
 export const seenChannel = (id) => HTTP.put(`/channel/${id}/seen`)
 export const updateUserInfo = (data, config) => HTTP.patch('/@me', data, config)

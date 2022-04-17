@@ -47,7 +47,7 @@ const IncomingRequestList = () => {
 }
 const ListItem = ({data}) => {
     const handleAccept = e => {
-        sendFriendRequestTo(data._id)
+        sendFriendRequestTo({_id: data._id})
     }
     const handleDecline = e => {
         deleteRelationship(data._id)
