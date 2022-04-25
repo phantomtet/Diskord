@@ -178,3 +178,6 @@ code {
 .d {
   box-shadow: inset 0px 0px 100px 100px rgba(0, 0, 0, 0.1);
 }
+.shadow-0 {
+  box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 3px 0px
+}

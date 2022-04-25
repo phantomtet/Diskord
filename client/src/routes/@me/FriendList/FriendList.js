@@ -5,9 +5,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import { createDM, deleteRelationship } from './../../../api/api';
+import { createCall, createDM, deleteRelationship } from './../../../api/api';
 import { useHistory } from 'react-router-dom';
 import { setProfile } from "../../../store/profile";
+import { socket } from '../../../socket';
 
 const FriendList = () => {
     const [search, setSearch] = useState('')
@@ -73,6 +74,9 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
         if (!dm) createDM({ recipients: [data._id] })
         else history.push(`/channel/${dm._id}`)
     }
+    const makeCall = e => {
+        createCall(dm._id)
+    }
     return (
         <React.Fragment>
             <div className='canclick2' onClick={handleCreateDM} style={{ height: 60, padding: '15px 0', display: 'flex', borderTop: '1px solid #42454a', justifyContent: 'space-between', borderRadius: 5}}>
@@ -89,13 +93,13 @@ const FriendListItem = React.memo(({data, onRemoveFriend}) => {
                 </div>
             </div>
             <Popper
-            className='popper test'
+            className='popper'
             open={Boolean(anchorEl)}
             anchorEl={anchorEl}
             >
                 <ClickAwayListener onClickAway={() => setAnchorEl(null)}>
                     <Box style={{padding: 6}}>
-                        <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Video Call</MenuItem>
+                        <MenuItem style={{fontSize: 14, minWidth: 170}} onClick={makeCall}>Start Video Call</MenuItem>
                         <MenuItem style={{fontSize: 14, minWidth: 170}}>Start Voice Call</MenuItem>
                         <MenuItem style={{fontSize: 14, color: '#ED4245', minWidth: 170}} onClick={handleRemoveFriend}>Remove Friend</MenuItem>
                     </Box>

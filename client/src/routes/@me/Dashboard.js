@@ -1,5 +1,5 @@
 import { Button, IconButton, Divider } from '@mui/material'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useRef, useState } from 'react'
 import { black } from '../../misc/config';
 import PeopleIcon from '@mui/icons-material/People';
 import CastleIcon from '@mui/icons-material/Castle';
@@ -17,6 +17,7 @@ import IncomingRequestList from './IncomingFriendRequestList/IncomingRequestList
 import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
 import AddFriendContainer from './AddFriend/AddFriendContainer';
 import { deleteDM } from '../../api/api';
+import CreateGroupDMPopper from '../../components/common/CreateGroupDMPopper';
 
 const Dashboard = () => {
     // state
@@ -111,10 +112,12 @@ const IncomingRequestButton = ({active, onClick}) => {
 }
 export const LeftBar = React.memo(() => {
     // hook
-
+    const ref = useRef()
     // redux state
     const dms = useSelector(state => state.profile?.dms)
     const sortedDms = useMemo(() => dms && [...dms].sort((a, b) => b.lastMessage?.createdAt - a.lastMessage?.createdAt), [dms])
+    // state
+    const [open, setOpen] = useState(false)
     // method
     return (
         <div className='leftbar' style={{backgroundColor: '#2f3136'}}>
@@ -135,7 +138,7 @@ export const LeftBar = React.memo(() => {
                     </Button>
                     <div style={{fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 5px 0 15px'}}>
                         <div>DIRECT MESSAGES</div>
-                        <IconButton size='small'><AddIcon/></IconButton>
+                        <IconButton ref={ref} size='small' onClick={() => setOpen(true)}><AddIcon/></IconButton>
                     </div>
                     {
                         sortedDms?.map((item, index) =>
@@ -148,6 +151,7 @@ export const LeftBar = React.memo(() => {
                 </div>
             </div>
             <MyStatus/>
+            <CreateGroupDMPopper open={open} onClose={() => setOpen(false)} anchorEl={ref.current}/>
         </div>
     )
 })
@@ -169,7 +173,7 @@ const FriendButton = React.memo(({data}) => {
                     {
                         !data?.isInbox ?
                         <React.Fragment>
-                            <div>{data?.recipients.map(item => item.user.username).join(', ')}</div>
+                            <marquee>{data?.recipients.map(item => item.user.username).join(', ')}</marquee>
                             <div align='left'>{data?.recipients?.length} Members</div>
                         </React.Fragment>
                         :

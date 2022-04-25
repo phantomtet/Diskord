@@ -12,6 +12,8 @@ import { createConnection, disconnectConnection } from './socket';
 import { socket } from './socket'
 import PrivateRoute from './misc/PrivateRoute';
 import { updateAvatar } from './api/api';
+import IncomingCallDialog from './components/common/IncomingCallDialog';
+import { setIncomingCall } from './store/incomingCallChannelData';
 
 function App() {
   // hook
@@ -35,6 +37,8 @@ function App() {
       return
     }
   }, [id])
+
+  // socket 
   useEffect(() => {
     if (!id) {
       socket?.removeAllListeners()
@@ -51,25 +55,21 @@ function App() {
     socket?.on('add relationship', (user) => {
       dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
     })
-    // socket?.on('request received', (user) => {
-    //   dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
-    // })
     socket?.on('update relationship', (user) => {
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item)})))
     })
     socket?.on('remove relationship', userId => {
       dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.filter(item => item.user._id !== userId)})))
     })
-    socket?.on('create dm', dm => {
+    socket?.on('create dm', (dm, creater) => {
       dispatch(setProfile(prev => !prev.dms.find(item => item._id === dm._id) ? ({...prev, dms: [dm, ...prev.dms] }) : prev))
-      history.push(`/channel/${dm._id}`)
+      creater === id && history.push(`/channel/${dm._id}`)
     })
     socket?.on('delete dm', dmId => {
       dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
     })
     socket?.on('update dm', dm => {
       dispatch(setProfile(prev => {
-        // return {...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)]}
         return {...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)]}
       }))
     })
@@ -82,6 +82,13 @@ function App() {
           dms: prev.dms.map(dm => ( {...dm, recipients: dm.recipients.map(item => item.user._id === profile._id ? {...item, user: profile} : item)} ))
         })
       }))
+    })
+    socket?.on('call', ({channel, callerId}) => {
+      if (callerId === id) {
+        history.push(`/channel/${channel._id}`)
+        return
+      }
+      dispatch(setIncomingCall(channel))
     })
   }, [id])
 
@@ -97,6 +104,7 @@ function App() {
         <PrivateRoute isAuth={Boolean(id)} exact path='/' children={<Dashboard/>}/>
         <PrivateRoute isAuth={Boolean(id)} exact path='/@me' children={<Dashboard/>}/>
       </div>
+      <IncomingCallDialog/>
     </div>
   )
   return ''

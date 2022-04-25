@@ -2,11 +2,9 @@ import { Box, Button, TextField } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { signIn } from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
-
+import { useHistory } from 'react-router-dom';
 const SignIn = () => {
     // hook
-    const dispatch = useDispatch()
     const history = useHistory()
     // state
     const id = useSelector(state => state.profile?._id)

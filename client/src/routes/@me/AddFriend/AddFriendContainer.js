@@ -41,7 +41,7 @@ const AddFriendContainer = () => {
             onChange={handleChange}
             InputProps={{
                 endAdornment: 
-                    <Button size='small' className='test' variant='contained'
+                    <Button size='small' variant='contained'
                     style={{backgroundColor: '#5865F2', color: 'white', opacity: isCorrectFormat ? 1 : 0.5, textTransform: 'capitalize', fontWeight: 'bold', margin: '10px 0', cursor: isCorrectFormat ? 'pointer' : 'not-allowed', width: 200}}
                     onClick={handleSearch} 
                     >
