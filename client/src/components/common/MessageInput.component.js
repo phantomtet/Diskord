@@ -35,6 +35,7 @@ const MessageInput = ({onSubmit}) => {
                 </div>
             }
             <TextField
+            placeholder={`Message`}
             autoComplete='new-password'
             multiline
             maxRows={5}

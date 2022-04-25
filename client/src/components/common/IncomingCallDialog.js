@@ -30,7 +30,7 @@ const IncomingCallDialog = () => {
                 {
                     !incomingCall?.isInbox ?
                         <React.Fragment>
-                            <div style={{color: 'white'}}>{incomingCall?.recipients.map(item => item.user.username).join(', ')}</div>
+                            <div style={{color: 'white'}}>{incomingCall?.name}</div>
                         </React.Fragment>
                         :
                         <div style={{color: 'white'}}>{incomingCall?.recipients.find(item => item.user?._id !== selfId)?.user?.username}</div>
