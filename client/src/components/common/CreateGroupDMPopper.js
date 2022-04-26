@@ -1,5 +1,5 @@
 import { Button, Checkbox, ClickAwayListener, Popper, TextField } from '@mui/material'
-import React, { useMemo, useState } from 'react'
+import React, { useLayoutEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { createDM } from '../../api/api'
 
@@ -19,6 +19,9 @@ const CreateGroupDMPopper = ({ onClose, ...rest }) => {
     const handleCreate = () => {
         return createDM({recipients: friends.filter(item => selected.includes(item._id)).map(item => item.user._id)})
     }
+    useLayoutEffect(() => {
+        setSelected([])
+    }, [rest.open])
     return (
         <Popper
             {...rest}
@@ -56,7 +59,6 @@ const CreateGroupDMPopper = ({ onClose, ...rest }) => {
 export default CreateGroupDMPopper
 
 const FriendList = ({ data, onClick, checked }) => {
-
     return (
         <div className='canclick2' style={{ height: 40, display: 'flex', padding: '6px 8px', justifyContent: 'space-between' }} onClick={onClick}>
             <div style={{ display: 'flex', alignItems: 'center' }}>

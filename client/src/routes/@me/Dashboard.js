@@ -1,6 +1,5 @@
 import { Button, IconButton, Divider } from '@mui/material'
 import React, { useCallback, useMemo, useRef, useState } from 'react'
-import { black } from '../../misc/config';
 import PeopleIcon from '@mui/icons-material/People';
 import CastleIcon from '@mui/icons-material/Castle';
 import AddIcon from '@mui/icons-material/Add';
@@ -18,6 +17,8 @@ import OutgoingRequestList from './OutgoingRequest.js/OutgoingRequestList';
 import AddFriendContainer from './AddFriend/AddFriendContainer';
 import { deleteDM } from '../../api/api';
 import CreateGroupDMPopper from '../../components/common/CreateGroupDMPopper';
+import LeaveChannelConfirmDialog from '../../components/common/LeaveChannelConfirmDialog';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 const Dashboard = () => {
     // state
@@ -119,6 +120,9 @@ export const LeftBar = React.memo(() => {
     // state
     const [open, setOpen] = useState(false)
     // method
+    const handleLeaveDM = useCallback(dm => {
+        setOpen(dm)
+    }, [])
     return (
         <div className='leftbar' style={{ backgroundColor: '#2f3136' }}>
             <div style={{ height: 48, padding: '10px', backgroundColor: '#2f3136', borderBottom: '2px solid #2b2e33' }}>
@@ -128,48 +132,53 @@ export const LeftBar = React.memo(() => {
             </div>
             <div className='scrollbox' style={{ width: '100%', height: 'calc(100% - 100px)', padding: 8 }}>
                 <div className='scrollbox-content' >
-                    <Button fullWidth style={{ backgroundColor: black, color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }}>
+                    <Button fullWidth style={{ backgroundColor: '', color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }}>
                         <PeopleIcon style={{ margin: '0 10px' }} />
                         Friends
                     </Button>
-                    <Button fullWidth style={{ backgroundColor: black, color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }}>
+                    <Button fullWidth style={{ backgroundColor: '', color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }}>
                         <CastleIcon style={{ margin: '0 10px' }} />
                         Nitro
                     </Button>
                     <div style={{ fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 5px 0 15px' }}>
                         <div>DIRECT MESSAGES</div>
-                        <IconButton ref={ref} size='small' onClick={() => setOpen(true)}><AddIcon /></IconButton>
+                        <IconButton ref={ref} size='small' onClick={() => setOpen(0)}><AddIcon /></IconButton>
                     </div>
                     {
                         sortedDms?.map((item, index) =>
-                            <FriendButton
+                            <SingleDmButton
                                 key={item._id}
                                 data={item}
+                                onLeave={handleLeaveDM}
                             />
                         )
                     }
                 </div>
             </div>
             <MyStatus />
-            <CreateGroupDMPopper open={open} onClose={() => setOpen(false)} anchorEl={ref.current} />
+            <CreateGroupDMPopper open={open === 0} onClose={() => setOpen(null)} anchorEl={ref.current} />
+            <LeaveChannelConfirmDialog dm={open} onClose={() => setOpen(null)} />
         </div>
     )
 })
 
-const FriendButton = React.memo(({ data }) => {
+const SingleDmButton = React.memo(({ data, onLeave }) => {
     const selfId = useSelector(state => state.profile?._id)
     const bool = Boolean(!data?.recipients?.find(item => item.user?._id === selfId)?.seen)
     const history = useHistory()
     const { channelId } = useParams()
     const [hover, ref] = useHover()
     const handleDeleteDM = () => {
-        deleteDM(data._id)
+        if (!data.isInbox) {
+            onLeave && onLeave(data)
+        }
+        else deleteDM(data._id)
     }
-    return (
-        <div className={`canclick2 ${channelId === data._id && 'activated'}`} ref={ref} style={{ backgroundColor: black, borderLeft: bool ? '5px solid red' : '5px solid #2f3136', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex', fontSize: 14 }}>
+    if (data) return (
+        <div className={`canclick2 ${channelId === data._id && 'activated'}`} ref={ref} style={{ backgroundColor: '', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex', fontSize: 14 }}>
             <div onClick={() => history.push(`/channel/${data._id}`)} style={{ alignItems: 'center', height: 42, display: 'flex', width: '100%', }}>
                 <img className='avatar-32' style={{ margin: '0 10px' }} src={data?.isInbox && data?.recipients.find(item => item.user?._id !== selfId)?.user.avatar || '/discord_icon.ico'} />
-                <div style={{ width: hover ? 120 : 160 }}>
+                <div style={{ width: hover || bool ? 120 : 160 }}>
                     {
                         !data?.isInbox ?
                             <React.Fragment>
@@ -181,9 +190,10 @@ const FriendButton = React.memo(({ data }) => {
                     }
                 </div>
             </div>
-            <div onClick={handleDeleteDM} style={{ display: hover ? 'flex' : 'none', width: 40, justifyContent: 'center', alignItems: 'center', }}><CloseIcon fontSize='small' /></div>
+            <div onClick={handleDeleteDM} style={{ display: hover || bool ? 'flex' : 'none', width: 40, justifyContent: 'center', alignItems: 'center', }}>{bool && !hover ? <FiberManualRecordIcon style={{fill: '#D83C3E', fontSize: 12}}/> : <CloseIcon fontSize='small' />}</div>
         </div>
     )
+    return ''
 }
 )
 

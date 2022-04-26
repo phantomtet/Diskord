@@ -168,7 +168,7 @@ const HeaderBar = ({ channelName }) => {
 
 const RightBar = () => {
     const dm = useContext(DmContext)
-    if (dm) return (
+    if (dm && !dm.isInbox) return (
         <div style={{ minWidth: 240, backgroundColor: '#2f3136', }}>
             <div style={{ padding: '24px 8px 0 16px', fontWeight: 'bold', fontSize: 14 }}>
                 Members - {dm.recipients.length}
