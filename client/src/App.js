@@ -53,37 +53,37 @@ function App() {
     }
     socket?.off('server send profle')
     socket?.on('add relationship', (user) => {
-      dispatch(setProfile(prev => ({...prev, relationship: [...prev.relationship, user]})))
+      dispatch(setProfile(prev => ({ ...prev, relationship: [...prev.relationship, user] })))
     })
     socket?.on('update relationship', (user) => {
-      dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item)})))
+      dispatch(setProfile(prev => ({ ...prev, relationship: prev.relationship.map(item => item.user._id === user.user._id ? user : item) })))
     })
     socket?.on('remove relationship', userId => {
-      dispatch(setProfile(prev => ({...prev, relationship: prev.relationship.filter(item => item.user._id !== userId)})))
+      dispatch(setProfile(prev => ({ ...prev, relationship: prev.relationship.filter(item => item.user._id !== userId) })))
     })
     socket?.on('create dm', (dm, creater) => {
-      dispatch(setProfile(prev => !prev.dms.find(item => item._id === dm._id) ? ({...prev, dms: [dm, ...prev.dms] }) : prev))
+      dispatch(setProfile(prev => !prev.dms.find(item => item._id === dm._id) ? ({ ...prev, dms: [dm, ...prev.dms] }) : prev))
       creater === id && history.push(`/channel/${dm._id}`)
     })
     socket?.on('delete dm', dmId => {
-      dispatch(setProfile(prev => ({...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
+      dispatch(setProfile(prev => ({ ...prev, dms: prev.dms.filter(item => item._id !== dmId) })))
     })
     socket?.on('update dm', dm => {
       dispatch(setProfile(prev => {
-        return {...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)]}
+        return { ...prev, dms: [dm, ...prev.dms.filter(item => item._id !== dm._id)] }
       }))
     })
     socket?.on('profile change', profile => {
       dispatch(setProfile(prev => {
-        if (profile._id === prev._id) prev = {...prev, ...profile}
+        if (profile._id === prev._id) prev = { ...prev, ...profile }
         return ({
           ...prev,
-          relationship: prev.relationship.map(item => item.user._id === profile._id ? {...item, user: profile} : item), 
-          dms: prev.dms.map(dm => ( {...dm, recipients: dm.recipients.map(item => item.user._id === profile._id ? {...item, user: profile} : item)} ))
+          relationship: prev.relationship.map(item => item.user._id === profile._id ? { ...item, user: profile } : item),
+          dms: prev.dms.map(dm => ({ ...dm, recipients: dm.recipients.map(item => item.user._id === profile._id ? { ...item, user: profile } : item) }))
         })
       }))
     })
-    socket?.on('call', ({channel, callerId}) => {
+    socket?.on('call', ({ channel, callerId }) => {
       if (callerId === id) {
         history.push(`/channel/${channel._id}`)
         return
@@ -94,17 +94,16 @@ function App() {
 
   if (!loading) return (
     <div className='fullwidth flex'>
-      {/* <button>click</button> */}
-      <Sidebar open={Boolean(id)}/>
+      <Sidebar open={Boolean(id)} />
       <div className='fullwidth'>
-        <Route exact path='/signin' component={SignIn}/>
-        <Route exact path='/register' component={Register}/>
-        <Route exact path='/test' component={Test}/>
-        <PrivateRoute isAuth={Boolean(id)} exact path='/channel/:channelId' children={<Channel/>}/>
-        <PrivateRoute isAuth={Boolean(id)} exact path='/' children={<Dashboard/>}/>
-        <PrivateRoute isAuth={Boolean(id)} exact path='/@me' children={<Dashboard/>}/>
+        <Route exact path='/signin' component={SignIn} />
+        <Route exact path='/register' component={Register} />
+        <Route exact path='/test' component={Test} />
+        <PrivateRoute isAuth={Boolean(id)} exact path='/channel/:channelId' children={<Channel />} />
+        <PrivateRoute isAuth={Boolean(id)} exact path='/' children={<Dashboard />} />
+        <PrivateRoute isAuth={Boolean(id)} exact path='/@me' children={<Dashboard />} />
       </div>
-      <IncomingCallDialog/>
+      <IncomingCallDialog />
     </div>
   )
   return ''
@@ -133,8 +132,8 @@ const Test = () => {
     updateAvatar(form)
   }
   return (
-    <div style={{backgroundColor: 'black', height: '100vh'}}>
-      <input type='file' onChange={handleChange}/>
+    <div style={{ backgroundColor: 'black', height: '100vh' }}>
+      <input type='file' onChange={handleChange} />
     </div>
   )
 }
