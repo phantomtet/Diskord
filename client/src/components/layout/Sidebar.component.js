@@ -27,7 +27,7 @@ const Sidebar = ({open}) => {
                 <img onClick={() => history.push('/@me')} className='pressing canclick' src='/discord_icon.ico' style={{backgroundColor: '#5865f2', width: 48, height: 48, borderRadius: '33%', margin: '0 12px 4px 12px'}}/>
                 <hr color='#373a3f' style={{margin: '0 20px 8px 20px'}}/>
             </div>
-            <div onClick={() => history.push('/about')}>About</div>
+            {/* <div onClick={() => history.push('/about')}>About</div> */}
             <div style={{ height: 52, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                 <LogoutIcon onClick={handleLogout} style={{fontSize: 30, fill: 'red'}} className='canclick pressing'/>
             </div>

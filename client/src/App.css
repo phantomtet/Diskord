@@ -6,6 +6,10 @@
   user-select: none;
   font-size: inherit;
 }
+html {
+  background-color: #36393F;
+  /* overflow: hidden; */
+}
 img {
   -webkit-user-drag: none;
   object-fit: cover;

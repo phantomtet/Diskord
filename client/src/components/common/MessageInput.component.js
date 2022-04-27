@@ -3,7 +3,7 @@ import { IconButton, Paper, TextField } from '@mui/material';
 import React, { useState, useRef, useMemo } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-import { black, black1, } from '../../misc/config';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 const MessageInput = ({onSubmit}) => {
     const ref = useRef()
@@ -68,15 +68,20 @@ export default React.memo(MessageInput)
 
 const FilePreview = ({data, onClose}) => {
     const url = useMemo(() => {
-        if (!data) return
+        if (!data || !data.type.includes('image/')) return undefined
         return URL.createObjectURL(data)
     }, [data])
     return (
         <Paper 
         style={{
-            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: black1, color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px', backgroundColor: '#2f3136'
+            minWidth: 200, width: 200, maxWidth: 200, minHeight: 200, maxHeight: 200, margin: '5px', position: 'relative', backgroundColor: '', color: 'lightgray', display: 'flex', padding: '10px 5px 20px 5px', backgroundColor: '#2f3136'
         }}>
-            <img src={url} style={{maxWidth: '100%', height: '100%', objectFit: 'contain', margin: 'auto', borderRadius: '3px'}}/>
+            {
+                url ?
+                <img src={url} style={{maxWidth: '100%', height: '100%', objectFit: 'contain', margin: 'auto', borderRadius: '3px'}}/>
+                :
+                <InsertDriveFileIcon style={{margin: 'auto', fontSize: 100}}/>
+            }
             <div style={{position: 'absolute', bottom: 0, left: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%'}}>{data.name}</div>
             <IconButton color='error' onClick={onClose} style={{position: 'absolute', top: 0, right: 0}}><CloseIcon/></IconButton>
             
