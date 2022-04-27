@@ -49,7 +49,7 @@ const Channel = () => {
     }, [channelId, chat, loading])
     // effect
     useLayoutEffect(() => {
-        if (!dm) return history.push('/')
+        if (!dm) return history.push('/@me')
     }, [dm])
     useEffect(() => {
         setChat([])

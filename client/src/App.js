@@ -14,8 +14,29 @@ import PrivateRoute from './misc/PrivateRoute';
 import { updateAvatar } from './api/api';
 import IncomingCallDialog from './components/common/IncomingCallDialog';
 import { setIncomingCall } from './store/incomingCallChannelData';
+import PublicNotFound from './routes/Public Route/PublicNotFound';
+import { Switch } from 'react-router-dom';
+import LoadingScreen from './components/common/Loading';
+import About from './routes/Public Route/About';
 
 function App() {
+
+  return (
+    <div>
+      <Switch>
+        <Route exact path='/test' component={Test} />
+        <Route exact path='/about' component={About} />
+
+        <Route path='/(channel|@me|app|signin|register|)' component={PrivateApp} />
+        <Route component={PublicNotFound} />
+      </Switch>
+    </div>
+  )
+}
+
+export default App;
+
+const PrivateApp = () => {
   // hook
   const dispatch = useDispatch()
   const history = useHistory()
@@ -27,7 +48,6 @@ function App() {
   useEffect(() => {
     if (!localStorage.getItem('diskordToken')) {
       setLoading(false)
-      // history.push('/signin')
       disconnectConnection()
       return
     }
@@ -37,7 +57,7 @@ function App() {
       return
     }
   }, [id])
-
+  console.log('private app render')
   // socket 
   useEffect(() => {
     if (!id) {
@@ -94,23 +114,22 @@ function App() {
 
   if (!loading) return (
     <div className='fullwidth flex'>
+      {/* <Switch> */}
       <Sidebar open={Boolean(id)} />
       <div className='fullwidth'>
         <Route exact path='/signin' component={SignIn} />
         <Route exact path='/register' component={Register} />
-        <Route exact path='/test' component={Test} />
-        <PrivateRoute isAuth={Boolean(id)} exact path='/channel/:channelId' children={<Channel />} />
-        <PrivateRoute isAuth={Boolean(id)} exact path='/' children={<Dashboard />} />
-        <PrivateRoute isAuth={Boolean(id)} exact path='/@me' children={<Dashboard />} />
+        <PrivateRoute isAuth={Boolean(id)} path='/channel/:channelId' children={<Channel />} />
+        <PrivateRoute isAuth={Boolean(id)} path='/(app|@me|)' children={<Dashboard />} />
+
       </div>
       <IncomingCallDialog />
+
+      {/* </Switch> */}
     </div>
   )
-  return ''
+  return <LoadingScreen />
 }
-
-export default App;
-
 
 
 
@@ -131,6 +150,7 @@ const Test = () => {
     form.append('avatar', e.target.files[0])
     updateAvatar(form)
   }
+  console.log('test component render')
   return (
     <div style={{ backgroundColor: 'black', height: '100vh' }}>
       <input type='file' onChange={handleChange} />

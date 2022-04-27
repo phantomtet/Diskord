@@ -11,10 +11,10 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <Switch>
+        {/* <Switch> */}
         <App />
 
-        </Switch>
+        {/* </Switch> */}
       </Provider>
     </BrowserRouter>
   </React.StrictMode>,
