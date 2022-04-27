@@ -34,7 +34,13 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: #4a4d52;
   border: 2px solid #282a2d;
-  border-radius: 10px;
+  border-radius: 7px;
+}
+.invisible-scroll {
+  overflow-y: hidden;
+}
+.invisible-scroll:hover {
+  overflow-y: auto;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
@@ -124,8 +130,8 @@ code {
   height: 100%
 }
 .scrollbox {
-  width: 10em;
-  height: 10em;
+  /* width: 10em; */
+  /* height: 10em; */
   overflow: auto;
   visibility: hidden;
 }
@@ -181,4 +187,10 @@ code {
 }
 .shadow-0 {
   box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 3px 0px
+}
+.show-when-hover-child {
+  visibility: hidden;
+}
+.show-when-hover-parent:hover .show-when-hover-child {
+  visibility: visible;
 }

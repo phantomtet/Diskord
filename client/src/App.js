@@ -3,7 +3,7 @@ import SignIn from './routes/signin/signin';
 import Channel from './routes/channel';
 import Sidebar from './components/layout/Sidebar.component';
 import Register from './routes/signin/register';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Dashboard from './routes/@me/Dashboard';
 import './App.css'
 import { useSelector, useDispatch } from 'react-redux';
@@ -45,7 +45,7 @@ const PrivateApp = () => {
   // state
   const [loading, setLoading] = useState(true)
   // effect
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!localStorage.getItem('diskordToken')) {
       setLoading(false)
       disconnectConnection()
@@ -56,12 +56,12 @@ const PrivateApp = () => {
       createConnection(localStorage.getItem('diskordToken'))
       return
     }
+    setLoading(false)
   }, [id])
-  console.log('private app render')
   // socket 
   useEffect(() => {
+    socket?.removeAllListeners()
     if (!id) {
-      socket?.removeAllListeners()
       socket?.on('server send profile', profile => {
         if (!profile) {
           localStorage.removeItem('diskordToken')
@@ -71,7 +71,6 @@ const PrivateApp = () => {
       })
       return
     }
-    socket?.off('server send profle')
     socket?.on('add relationship', (user) => {
       dispatch(setProfile(prev => ({ ...prev, relationship: [...prev.relationship, user] })))
     })

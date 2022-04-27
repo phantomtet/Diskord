@@ -96,7 +96,7 @@ const Channel = () => {
 
                         </div>
                     </div>
-                    <div style={{ display: 'flex', height: 'calc(100vh - 48px)' }}>
+                    <div style={{ display: 'flex', height: 'calc(100vh - 48px)', backgroundColor: '#2f3136' }}>
                         <ChatList
                             selfId={selfId}
                             data={chat}
@@ -169,18 +169,21 @@ const HeaderBar = ({ channelName }) => {
 const RightBar = () => {
     const dm = useContext(DmContext)
     if (dm && !dm.isInbox) return (
-        <div style={{ minWidth: 240, backgroundColor: '#2f3136', }}>
-            <div style={{ padding: '24px 8px 0 16px', fontWeight: 'bold', fontSize: 14 }}>
-                Members - {dm.recipients.length}
+        <div className="scrollbox" style={{ minWidth: 240, maxWidth: 240, backgroundColor: '#2f3136' }}>
+            <div className="scrollbox-content" >
+                <div style={{ padding: '24px 8px 0 16px', fontWeight: 'bold', fontSize: 14 }}>
+                    Members - {dm.recipients.length}
 
+                </div>
+                <div style={{ padding: 8 }}>
+                    {
+                        dm.recipients.map(item =>
+                            <MemberList key={item._id} data={item.user} />
+                        )
+                    }
+                </div>
             </div>
-            <div style={{padding: 8}}>
-                {
-                    dm.recipients.map(item =>
-                        <MemberList key={item._id} data={item.user} />
-                    )
-                }
-            </div>
+
         </div>
     )
     return ''
@@ -190,7 +193,7 @@ const MemberList = ({ data }) => {
     return (
         <div className="canclick2" style={{ height: 42, display: 'flex', padding: '0 8px', alignItems: 'center' }}>
             <img className="avatar-32" src={data.avatar || '/discord_icon.ico'} />
-            <div style={{fontSize: 15, marginLeft: 10}}>{data.username}</div>
+            <div className="threedottext" style={{ fontSize: 15, marginLeft: 10 }}>{data.username}</div>
         </div>
     )
 }
