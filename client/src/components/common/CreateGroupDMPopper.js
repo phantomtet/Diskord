@@ -2,6 +2,15 @@ import { Button, Checkbox, ClickAwayListener, Popper, TextField } from '@mui/mat
 import React, { useLayoutEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { createDM } from '../../api/api'
+import styled from 'styled-components'
+
+const Container = styled('div')`
+    width: 440px;
+    background-color: #36393f;
+    padding: 16px;
+    border-radius: 4px;
+    transition: 2s ease all;
+`
 
 const CreateGroupDMPopper = ({ onClose, ...rest }) => {
     // state
@@ -28,7 +37,7 @@ const CreateGroupDMPopper = ({ onClose, ...rest }) => {
             placement='bottom-end'
         >
             <ClickAwayListener onClickAway={onClose}>
-                <div className='shadow-0' style={{ width: 440, backgroundColor: '#36393f', padding: 16, borderRadius: 4 }}>
+                <Container className='shadow-0'>
                     <div style={{ color: 'white', fontSize: 20, fontWeight: 'bold', marginBottom: 8 }}>Select Friends</div>
                     <div style={{ fontSize: 12, color: '#B9BBBE', marginBottom: 20 }}>You can add {9 - selected.length} more friends</div>
                     <TextField size='small' placeholder='Type the usename of a friend' fullWidth autoComplete='new-password'
@@ -51,7 +60,7 @@ const CreateGroupDMPopper = ({ onClose, ...rest }) => {
                     <Button onClick={handleCreate} disabled={Boolean(!selected.length)} fullWidth style={{backgroundColor: '#5865F2', color: 'white', textTransform: 'capitalize', opacity: !selected.length && 0.5}}>
                         Create Group DM
                     </Button>
-                </div>
+                </Container>
             </ClickAwayListener>
         </Popper>
     )
