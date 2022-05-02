@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { sendMessage, getMessage, seenChannel } from './../api/api';
+import { sendMessage, getMessage, seenChannel, editChannel } from './../api/api';
 import MessageInput from './../components/common/MessageInput.component';
 import { socket } from './../socket';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,9 +8,23 @@ import { LeftBar } from "./@me/Dashboard";
 import { setProfile } from "../store/profile";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SingleMessage from "../components/common/SingleMessage";
+import styled from "styled-components";
+import { ref } from "firebase/storage";
 
 const DmContext = React.createContext()
-
+const StyledInput = styled.input`
+    background-color: #36393F;
+    border: none;
+    &:focus, &:hover {
+        outline: 1px solid black;
+    }
+    &:focus {
+        background-color: #2f3136;
+    }
+    padding: 5px 5px;
+    margin-right: 20px;
+    border-radius: 4px;
+`
 const Channel = () => {
     // boiler plate
     const history = useHistory()
@@ -73,29 +87,7 @@ const Channel = () => {
             <div style={{ display: 'flex', width: '100%' }}>
                 <LeftBar />
                 <div style={{ width: '100%' }}>
-                    <div style={{ minHeight: 48, backgroundColor: '#36393F', borderBottom: '1px solid #2b2e33', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
-                        <div>
-                            {
-                                !dm?.isInbox ?
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <PeopleAltIcon style={{ marginRight: 10 }} />
-                                        <span style={{ color: 'white' }}>
-                                            {dm?.name}
-                                        </span>
-                                    </div>
-                                    :
-                                    <div>
-                                        @ &nbsp;
-                                        <span style={{ color: 'white' }}>
-                                            {dm?.recipients.find(item => item.user?._id !== selfId)?.user?.username}
-                                        </span>
-                                    </div>
-                            }
-                        </div>
-                        <div>
-
-                        </div>
-                    </div>
+                    <TopBar />
                     <div style={{ display: 'flex', height: 'calc(100vh - 48px)', backgroundColor: '#2f3136' }}>
                         <ChatList
                             selfId={selfId}
@@ -150,21 +142,6 @@ const ChatList = ({ onSubmit, data, fetchNextData = () => true }) => {
         </div>
     )
 }
-const HeaderBar = ({ channelName }) => {
-    const anchorRef = useRef()
-    const [open, setOpen] = useState(false)
-
-    return (
-        <div
-            ref={anchorRef}
-            style={{
-                height: 48
-            }}
-        >
-
-        </div>
-    )
-}
 
 const RightBar = () => {
     const dm = useContext(DmContext)
@@ -197,5 +174,42 @@ const MemberList = ({ data }) => {
         </div>
     )
 }
+const TopBar = () => {
+    const selfId = useSelector(state => state.profile?._id)
+    const dm = useContext(DmContext)
+    const [input, setInput] = useState('')
+    const inputRef = useRef()
+    const handleSubmit = () => {
+        if (dm.name !== input) editChannel(dm._id, { name: input })
+    }
 
+    useLayoutEffect(() => {
+        if (!dm) return
+        setInput(dm.name)
+    }, [dm])
+    return (
+        <div style={{ minHeight: 48, backgroundColor: '#36393F', borderBottom: '1px solid #2b2e33', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px' }}>
+            <div style={{ width: '100%' }}>
+                {
+                    !dm?.isInbox ?
+                        <div style={{ display: 'flex', alignItems: 'center', }}>
+                            <PeopleAltIcon style={{ marginRight: 5 }} />
+                            <StyledInput ref={inputRef} style={{width: `${inputRef.current?.value.length}ch`}} type='text' onBlur={handleSubmit} value={input} onChange={e => setInput(e.target.value)} />
+                        </div>
+                        :
+                        <div>
+                            @ &nbsp;
+                            <span style={{ color: 'white' }}>
+                                {dm?.recipients.find(item => item.user?._id !== selfId)?.user?.username}
+                            </span>
+                        </div>
+                }
+            </div>
+            <div>
+                <PeopleAltIcon style={{ marginRight: 5 }} />
+
+            </div>
+        </div>
+    )
+}
 export default Channel
