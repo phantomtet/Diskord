@@ -177,7 +177,7 @@ const SingleDmButton = React.memo(({ data, onLeave }) => {
     if (data) return (
         <div className={`canclick2 ${channelId === data._id && 'activated'}`} ref={ref} style={{ backgroundColor: '', margin: '1px 0', justifyContent: 'space-between', textTransform: 'capitalize', paddingLeft: 0, display: 'flex', fontSize: 14 }}>
             <div onClick={() => history.push(`/channel/${data._id}`)} style={{ alignItems: 'center', height: 42, display: 'flex', width: '100%', }}>
-                <img className='avatar-32' style={{ margin: '0 10px' }} src={data?.isInbox && data?.recipients.find(item => item.user?._id !== selfId)?.user.avatar || '/discord_icon.ico'} />
+                <img className='avatar-32' style={{ margin: '0 10px' }} src={data?.isInbox && data?.recipients.find(item => item.user?._id !== selfId)?.user.avatar || data.avatar || '/groupicon.png'} />
                 <div style={{ width: hover || bool ? 120 : 160 }}>
                     {
                         !data?.isInbox ?
