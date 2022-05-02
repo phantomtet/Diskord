@@ -21,7 +21,7 @@ const StyledInput = styled.input`
     &:focus {
         background-color: #2f3136;
     }
-    padding: 5px 5px;
+    padding: 5px 10px 5px 5px;
     margin-right: 20px;
     border-radius: 4px;
 `
@@ -194,7 +194,7 @@ const TopBar = () => {
                     !dm?.isInbox ?
                         <div style={{ display: 'flex', alignItems: 'center', }}>
                             <PeopleAltIcon style={{ marginRight: 5 }} />
-                            <StyledInput ref={inputRef} style={{width: `${inputRef.current?.value.length}ch`}} type='text' onBlur={handleSubmit} value={input} onChange={e => setInput(e.target.value)} />
+                            <StyledInput ref={inputRef} style={{ width: `${inputRef.current?.value.length + 1}ch` }} type='text' onBlur={handleSubmit} value={input} onChange={e => setInput(e.target.value)} />
                         </div>
                         :
                         <div>
