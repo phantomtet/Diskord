@@ -114,6 +114,7 @@ const IncomingRequestButton = ({ active, onClick }) => {
 export const LeftBar = React.memo(() => {
     // hook
     const ref = useRef()
+    const history = useHistory()
     // redux state
     const dms = useSelector(state => state.profile?.dms)
     const sortedDms = useMemo(() => dms && [...dms].sort((a, b) => b.lastMessage?.createdAt - a.lastMessage?.createdAt), [dms])
@@ -136,9 +137,9 @@ export const LeftBar = React.memo(() => {
                         <PeopleIcon style={{ margin: '0 10px' }} />
                         Friends
                     </Button>
-                    <Button fullWidth style={{ backgroundColor: '', color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }}>
+                    <Button fullWidth style={{ backgroundColor: '', color: 'lightgray', margin: '1px 0', justifyContent: 'left', textTransform: 'capitalize' }} onClick={() => history.push('/about')}>
                         <CastleIcon style={{ margin: '0 10px' }} />
-                        Nitro
+                        About
                     </Button>
                     <div style={{ fontSize: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '5px 5px 0 15px' }}>
                         <div>DIRECT MESSAGES</div>

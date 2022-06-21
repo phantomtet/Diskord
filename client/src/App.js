@@ -60,7 +60,6 @@ const PrivateApp = () => {
   }, [id])
   // socket 
   useEffect(() => {
-    socket?.removeAllListeners()
     if (!id) {
       socket?.on('server send profile', profile => {
         if (!profile) {
@@ -109,10 +108,11 @@ const PrivateApp = () => {
       }
       dispatch(setIncomingCall(channel))
     })
+    return () => socket?.removeAllListeners()
   }, [id])
 
   if (!loading) return (
-    <div className='fullwidth flex'>
+    <div className='fullwidth flex' onContextMenu={(e) => e.preventDefault()}>
       {/* <Switch> */}
       <Sidebar open={Boolean(id)} />
       <div className='fullwidth'>

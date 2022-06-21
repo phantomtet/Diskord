@@ -9,7 +9,8 @@ import { setProfile } from "../store/profile";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SingleMessage from "../components/common/SingleMessage";
 import styled from "styled-components";
-import { ref } from "firebase/storage";
+import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const DmContext = React.createContext()
 const StyledInput = styled.input`
@@ -25,13 +26,18 @@ const StyledInput = styled.input`
     margin-right: 20px;
     border-radius: 4px;
 `
+const StyledLoading = styled.div`
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    display: ${(props) => props.loading ? '' : 'none' }
+`
 const Channel = () => {
     // boiler plate
     const history = useHistory()
     const { channelId } = useParams()
     const dispatch = useDispatch()
-
-    // redux state
+    const token = useRef({getToken: null})
     const selfId = useSelector(state => state.profile?._id)
     const dm = useSelector(state => state.profile?.dms?.find(item => item._id === channelId))
     // state
@@ -51,13 +57,16 @@ const Channel = () => {
         sendMessage(channelId, form)
     }, [channelId])
     const handleFetchNextData = useCallback((fromStart) => {
-        if (loading) return
         setLoading(true)
-        getMessage(channelId, { params: { limit: 50, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined } })
+        token.current.getToken?.cancel()
+        const source = axios.CancelToken.source()
+        token.current.getToken = source
+        getMessage(channelId, { params: { limit: 50, beforeId: !fromStart && chat[chat.length - 1]?._id || undefined }, cancelToken: source.token }, )
             .then(res => {
-                setLoading(false)
+                console.log(res)
                 if (res.status === 200) {
-                    setChat(prev => [...prev, ...res.data])
+                    setLoading(false)
+                    setChat(prev => fromStart ? [...res.data] : [...prev, ...res.data])
                 }
             })
     }, [channelId, chat, loading])
@@ -72,12 +81,12 @@ const Channel = () => {
         // console.log(dm, dm.recipients?.find(item => item.user._id === selfId)?.seen)
         channelId && !dm.recipients?.find(item => item.user._id === selfId)?.seen && seenChannel(channelId).then(res => res.status === 200 && dispatch(setProfile(prev => ({ ...prev, dms: prev.dms.map(item => item._id === channelId ? { ...item, recipients: item.recipients.map(rec => rec.user._id === selfId ? { ...rec, seen: true } : rec) } : item) }))))
         socket?.emit('channel focus', channelId)
-        socket?.off('client send message')
         socket?.on('client send message', msg => {
             msg.channelId === channelId && setChat(prev => [msg, ...prev])
         })
-
+        
         return () => {
+            socket?.off('client send message')
             socket?.emit('channel focus', null)
         }
     }, [channelId])
@@ -94,6 +103,7 @@ const Channel = () => {
                             data={chat}
                             onSubmit={handleSubmit}
                             fetchNextData={handleFetchNextData}
+                            loading={loading}
                         />
                         <RightBar />
                     </div>
@@ -102,16 +112,15 @@ const Channel = () => {
         </DmContext.Provider>
     )
 }
-const ChatList = ({ onSubmit, data, fetchNextData = () => true }) => {
+const ChatList = ({ onSubmit, data, loading, fetchNextData = () => true }) => {
     const handleScroll = (e) => {
-        // console.log(Math.abs(e.target.scrollTop), e.target.offsetHeight, e.target.scrollHeight )
+        if (loading) return
         if (Math.abs(e.target.scrollTop) + e.target.offsetHeight >= e.target.scrollHeight - 1) {
-            // console.log(data[data.length - 1])
             fetchNextData()
         }
     }
     return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
             <div className="flex fullwidth "
                 style={{
                     padding: '0 16px 0px 16px',
@@ -133,6 +142,7 @@ const ChatList = ({ onSubmit, data, fetchNextData = () => true }) => {
                         </div>
                     )
                 }
+                <StyledLoading loading={loading}><CircularProgress size={30} color='primary'/></StyledLoading>
             </div>
             <div style={{ backgroundColor: '#36393F', padding: '0 16px 20px 16px' }}>
                 <MessageInput
